@@ -1,3 +1,4 @@
+name: PR CI Gate
 on:
   pull_request:
     branches:
@@ -19,7 +20,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
       - run: npm ci
       - run: npx biome ci --reporter=github .
 
