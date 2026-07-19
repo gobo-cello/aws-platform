@@ -1,6 +1,65 @@
 # aws-platform
 
-gobo-cello.com の AWS Organization レベルのインフラ基盤。
+gobo-cello.com の IaC リポジトリ。
+
+## このリポジトリで管理するもの
+
+- CloudTrail ログの一元管理
+- ログアーカイブの保存と暗号化
+- AWS Organizations 全体を対象とする IAM Access Analyzer
+- Service Control Policy
+- GitHub Actions と AWS の OIDC 連携
+
+## このリポジトリで管理しないもの
+
+- AWS ルートユーザーの認証情報
+- IAM Identity Center のユーザー
+- 連絡先メールアドレス
+- ドメインレジストラの認証情報
+- シークレットおよび API キー
+- ブログのアプリケーションとコンテンツ
+
+## ディレクトリ構成
+
+```
+aws-platform/
+├── bin/
+│   └── aws-platform.ts
+├── lib/
+│   ├── config/
+│   │   ├── accounts.ts
+│   │   ├── environments.ts
+│   │   └── tags.ts
+│   ├── constructs/
+│   │   └── README.md
+│   └── stacks/
+│       ├── log-archive-stack.ts
+│       ├── organization-trail-stack.ts
+│       ├── access-analyzer-stack.ts
+│       ├── github-oidc-stack.ts
+│       └── organization-policies-stack.ts
+├── test/
+├── docs/
+│   ├── architecture.md
+│   └── adr/
+│       └── 0001-repository-boundary.md
+├── cdk.json
+├── package.json
+├── package-lock.json
+├── tsconfig.json
+├── jest.config.js
+├── README.md
+└── .gitignore
+```
+
+## 公開リポジトリとしての取り扱い
+
+- このリポジトリの内容は、コード、設定、ドキュメント、Issue、Pull Request を含め、第三者から閲覧される前提で扱うこと。
+- 認証情報、シークレット、個人情報、連絡先、公開不要な環境固有情報を、コード、設定、ログ、コメント、サンプルへ含めないこと。
+- AWS への認証には OIDC と一時認証情報を使用し、長期的なアクセスキーを使用しないこと。
+- 実値が不要な箇所では、環境変数、GitHub Variables、または明らかなダミー値を使用すること。
+- GitHub Actions は必要最小限の権限で実行し、外部 Action はコミット SHA で固定すること。
+- 秘密情報が公開された可能性がある場合は、履歴の修正だけで済ませず、直ちに無効化またはローテーションすること。
 
 ## Git とコミットの共有運用
 
