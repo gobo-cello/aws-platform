@@ -19,39 +19,6 @@ gobo-cello.com の IaC リポジトリ。
 - シークレットおよび API キー
 - ブログのアプリケーションとコンテンツ
 
-## ディレクトリ構成
-
-```
-aws-platform/
-├── bin/
-│   └── aws-platform.ts
-├── lib/
-│   ├── config/
-│   │   ├── accounts.ts
-│   │   ├── environments.ts
-│   │   └── tags.ts
-│   ├── constructs/
-│   │   └── README.md
-│   └── stacks/
-│       ├── log-archive-stack.ts
-│       ├── organization-trail-stack.ts
-│       ├── access-analyzer-stack.ts
-│       ├── github-oidc-stack.ts
-│       └── organization-policies-stack.ts
-├── test/
-├── docs/
-│   ├── architecture.md
-│   └── adr/
-│       └── 0001-repository-boundary.md
-├── cdk.json
-├── package.json
-├── package-lock.json
-├── tsconfig.json
-├── jest.config.js
-├── README.md
-└── .gitignore
-```
-
 ## 公開リポジトリとしての取り扱い
 
 - このリポジトリの内容は、コード、設定、ドキュメント、Issue、Pull Request を含め、第三者から閲覧される前提で扱うこと。
