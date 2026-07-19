@@ -17,40 +17,28 @@ jobs:
     runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version-file: '.node-version'
-      - run: npm ci
+      - uses: ./.github/actions/setup-node-npm
       - run: npx biome ci --reporter=github .
 
   build:
     runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version-file: '.node-version'
-      - run: npm ci
+      - uses: ./.github/actions/setup-node-npm
       - run: npm run build
 
   jest:
     runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version-file: '.node-version'
-      - run: npm ci
+      - uses: ./.github/actions/setup-node-npm
       - run: npm test
 
   cdk-synth:
     runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version-file: '.node-version'
-      - run: npm ci
+      - uses: ./.github/actions/setup-node-npm
       - run: npx cdk synth
 
   pr-ci-gate:
