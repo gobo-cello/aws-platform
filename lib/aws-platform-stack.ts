@@ -1,4 +1,8 @@
-import * as cdk from "aws-cdk-lib/core";
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { Stack, type StackProps } from "aws-cdk-lib";
+import type { Construct } from "constructs";
 
-export class AwsPlatformStack extends cdk.Stack {}
+export class AwsPlatformStack extends Stack {
+	public constructor(scope: Construct, id: string, props?: StackProps) {
+		super(scope, id, props);
+	}
+}

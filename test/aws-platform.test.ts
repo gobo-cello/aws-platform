@@ -1,16 +1,12 @@
-// import * as cdk from 'aws-cdk-lib/core';
-// import { Template } from 'aws-cdk-lib/assertions';
-// import * as AwsPlatform from '../lib/aws-platform-stack';
+import * as cdk from "aws-cdk-lib";
+import { Template } from "aws-cdk-lib/assertions";
+import { AwsPlatformStack } from "../lib/aws-platform-stack";
 
-// example test. To run these tests, uncomment this file along with the
-// example resource in lib/aws-platform-stack.ts
-test("SQS Queue Created", () => {
-	//   const app = new cdk.App();
-	//     // WHEN
-	//   const stack = new AwsPlatform.AwsPlatformStack(app, 'MyTestStack');
-	//     // THEN
-	//   const template = Template.fromStack(stack);
-	//   template.hasResourceProperties('AWS::SQS::Queue', {
-	//     VisibilityTimeout: 300
-	//   });
+describe("AwsPlatformStack", () => {
+	test("synthesizes an empty template before platform resources are added", () => {
+		const app = new cdk.App();
+		const stack = new AwsPlatformStack(app, "TestAwsPlatformStack");
+
+		expect(() => Template.fromStack(stack)).not.toThrow();
+	});
 });
