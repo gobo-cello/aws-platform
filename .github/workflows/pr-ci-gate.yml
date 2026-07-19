@@ -23,9 +23,21 @@ jobs:
       - run: npm ci
       - run: npx biome ci --reporter=github .
 
+  jest:
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
   pr-ci-gate:
     needs:
       - biome
+      - jest
     if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-slim
     steps:
