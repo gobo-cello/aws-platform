@@ -1,0 +1,41 @@
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  biome:
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx biome ci --reporter=github .
+
+  pr-ci-gate:
+    needs:
+      - biome
+    if: ${{ always() && !cancelled() }}
+    runs-on: ubuntu-slim
+    steps:
+      - name: Verify CI results
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS" | jq -e '
+            all(
+              .[];
+              .result == "success" or .result == "skipped"
+            )
+          '
