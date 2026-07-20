@@ -127,3 +127,33 @@ object単位のmetadata overheadにより、十分なコスト削減に
 ならない可能性がある。
 
 実際のログ量とS3コストを確認した後に再評価する。
+
+## IAM Access Analyzer
+
+Management accountの`ap-northeast-1`に、
+organization external access analyzerを配置する。
+
+Analyzerのzone of trustはAWS Organization全体とする。
+
+これにより、組織外のAWS accountまたはpublic principalへ
+アクセスを許可するresource-based policyを検出する。
+
+### Region policy
+
+IAM Access AnalyzerはRegional serviceである。
+
+現時点ではresourceの主配置先である`ap-northeast-1`だけに
+external access analyzerを作成する。
+
+別Regionへ分析対象resourceを配置する場合、そのRegionにも
+organization external access analyzerを追加する。
+
+### Delegated administrator
+
+現時点ではManagement accountがAnalyzerを所有する。
+
+`log-archive` accountは監査ログ保存専用であり、
+IAM Access Analyzerのdelegated administratorにはしない。
+
+将来、専用のsecurity tooling accountを作成した場合に
+delegated administratorへの移行を再評価する。
