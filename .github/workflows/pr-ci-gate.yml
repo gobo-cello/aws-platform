@@ -44,6 +44,8 @@ jobs:
           AWS_ORGANIZATION_ID: 'o-aaaaaaaaaa'
           AWS_MANAGEMENT_ACCOUNT_ID: '111111111111'
           AWS_LOG_ARCHIVE_ACCOUNT_ID: '222222222222'
+          AWS_CLOUDTRAIL_LOG_BUCKET_NAME: 'cloudtrail-logs-222222222222-ap-northeast-1'
+          AWS_CLOUDTRAIL_KMS_KEY_ARN: 'arn:aws:kms:ap-northeast-1:222222222222:key/00000000-0000-0000-0000-000000000000'
 
   pr-ci-gate:
     needs:

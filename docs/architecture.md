@@ -97,3 +97,33 @@ Cross-account Stack間でTrail ARNを事前に確定できるよう、
 Trailのphysical nameのみ`OrganizationTrail`に固定する。
 
 S3 bucket名、KMS key ID、Stack名は固定しない。
+
+## CloudTrail log retention policy
+
+CloudTrailのログは、Log Archive accountの専用S3 bucketへ保存する。
+
+### Retention
+
+- current object version: 400日
+- noncurrent object version: 30日
+- incomplete multipart upload: 7日
+- expired delete marker: 自動削除
+
+400日は、1年分を超える監査履歴を保持するための
+現時点における運用baselineである。
+
+法令、契約、業界規制などによる保持要件が生じた場合は、
+その要件を優先して変更する。
+
+### Storage Class
+
+現時点ではStorage Class transitionを設定しない。
+
+CloudTrail logおよびdigestは小さいobjectが多く、
+128KB未満のobjectはdefaultではLifecycle transitionされない。
+
+小さいobjectをGlacierへ強制移行すると、transition requestと
+object単位のmetadata overheadにより、十分なコスト削減に
+ならない可能性がある。
+
+実際のログ量とS3コストを確認した後に再評価する。

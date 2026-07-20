@@ -1,8 +1,10 @@
 import { type AwsAccountId, parseAwsAccountId } from "./accounts";
+import { type KmsKeyArn, parseKmsKeyArn } from "./kms";
 import {
 	type AwsOrganizationId,
 	parseAwsOrganizationId,
 } from "./organizations";
+import { parseS3BucketName, type S3BucketName } from "./s3";
 
 export const supportedAwsRegions = ["ap-northeast-1"] as const;
 
@@ -17,6 +19,12 @@ export interface PlatformConfiguration {
 	readonly organizationId: AwsOrganizationId;
 	readonly management: AwsEnvironment;
 	readonly logArchive: AwsEnvironment;
+	readonly cloudTrailDestination: CloudTrailDestination;
+}
+
+export interface CloudTrailDestination {
+	readonly bucketName: S3BucketName;
+	readonly kmsKeyArn: KmsKeyArn;
 }
 
 export class MissingEnvironmentVariableError extends Error {
@@ -54,6 +62,14 @@ export function loadPlatformConfiguration(): PlatformConfiguration {
 				readRequiredEnvironmentVariable("AWS_LOG_ARCHIVE_ACCOUNT_ID"),
 			),
 			region,
+		},
+		cloudTrailDestination: {
+			bucketName: parseS3BucketName(
+				readRequiredEnvironmentVariable("AWS_CLOUDTRAIL_LOG_BUCKET_NAME"),
+			),
+			kmsKeyArn: parseKmsKeyArn(
+				readRequiredEnvironmentVariable("AWS_CLOUDTRAIL_KMS_KEY_ARN"),
+			),
 		},
 	} satisfies PlatformConfiguration;
 }

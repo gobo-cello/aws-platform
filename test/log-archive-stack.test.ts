@@ -61,6 +61,33 @@ describe("LogArchiveStack", () => {
 		});
 	});
 
+	test("CloudTrailログのLifecycle policyを設定する", () => {
+		template.hasResourceProperties("AWS::S3::Bucket", {
+			LifecycleConfiguration: {
+				Rules: Match.arrayWith([
+					Match.objectLike({
+						Id: "ExpireCloudTrailLogs",
+						Status: "Enabled",
+						Prefix: "AWSLogs/",
+						ExpirationInDays: 400,
+						NoncurrentVersionExpiration: {
+							NoncurrentDays: 30,
+						},
+						AbortIncompleteMultipartUpload: {
+							DaysAfterInitiation: 7,
+						},
+					}),
+					Match.objectLike({
+						Id: "RemoveExpiredDeleteMarkers",
+						Status: "Enabled",
+						Prefix: "AWSLogs/",
+						ExpiredObjectDeleteMarker: true,
+					}),
+				]),
+			},
+		});
+	});
+
 	test("CloudTrailのorganization pathを許可する", () => {
 		template.hasResourceProperties("AWS::S3::BucketPolicy", {
 			PolicyDocument: Match.objectLike({
