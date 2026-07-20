@@ -1,8 +1,13 @@
 #!/usr/bin/env node
 
-import * as cdk from "aws-cdk-lib";
+import { App } from "aws-cdk-lib";
 import { AwsPlatformStack } from "../lib/aws-platform-stack";
+import { loadPlatformEnvironments } from "../lib/config/environments";
 
-const app = new cdk.App();
+const app = new App();
+const environments = loadPlatformEnvironments();
 
-new AwsPlatformStack(app, "AwsPlatformStack");
+new AwsPlatformStack(app, "AwsPlatformStack", {
+	env: environments.management,
+	environmentName: "management",
+});

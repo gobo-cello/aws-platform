@@ -1,8 +1,20 @@
-export const accountEnvironmentVariables = {
-	management: "AWS_MANAGEMENT_ACCOUNT_ID",
-	logArchive: "AWS_LOG_ARCHIVE_ACCOUNT_ID",
-	blogProduction: "AWS_BLOG_PRODUCTION_ACCOUNT_ID",
-	blogSandbox: "AWS_BLOG_SANDBOX_ACCOUNT_ID",
-} as const;
+declare const awsAccountIdBrand: unique symbol;
 
-export type AccountName = keyof typeof accountEnvironmentVariables;
+export type AwsAccountId = string & {
+	readonly [awsAccountIdBrand]: "AwsAccountId";
+};
+
+export class InvalidAwsAccountIdError extends Error {
+	public constructor(value: unknown) {
+		super(`Invalid AWS account ID: ${String(value)}`);
+		this.name = "InvalidAwsAccountIdError";
+	}
+}
+
+export function parseAwsAccountId(value: unknown): AwsAccountId {
+	if (typeof value !== "string" || !/^\d{12}$/.test(value)) {
+		throw new InvalidAwsAccountIdError(value);
+	}
+
+	return value as AwsAccountId;
+}
