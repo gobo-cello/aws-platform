@@ -1,7 +1,7 @@
 import { Tags } from "aws-cdk-lib";
 import type { IConstruct } from "constructs";
 
-export const deploymentEnvironments = ["management", "logArchive"] as const;
+export const deploymentEnvironments = ["management", "security"] as const;
 
 export type DeploymentEnvironment = (typeof deploymentEnvironments)[number];
 
