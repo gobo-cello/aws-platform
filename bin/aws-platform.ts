@@ -2,6 +2,7 @@
 
 import { App } from "aws-cdk-lib";
 import { loadPlatformConfiguration } from "../lib/config/environments";
+import { AccessAnalyzerStack } from "../lib/stacks/access-analyzer-stack";
 import { LogArchiveStack } from "../lib/stacks/log-archive-stack";
 import { OrganizationTrailStack } from "../lib/stacks/organization-trail-stack";
 
@@ -19,4 +20,8 @@ new OrganizationTrailStack(app, "OrganizationTrailStack", {
 	organizationId: configuration.organizationId,
 	logBucketName: configuration.cloudTrailDestination.bucketName,
 	kmsKeyArn: configuration.cloudTrailDestination.kmsKeyArn,
+});
+
+new AccessAnalyzerStack(app, "AccessAnalyzerStack", {
+	env: configuration.management,
 });
