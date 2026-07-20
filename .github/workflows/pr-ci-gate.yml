@@ -40,6 +40,9 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: ./.github/actions/setup-node-npm
       - run: npx cdk synth
+        env:
+          AWS_MANAGEMENT_ACCOUNT_ID: '111111111111'
+          AWS_LOG_ARCHIVE_ACCOUNT_ID: '222222222222'
 
   pr-ci-gate:
     needs:
