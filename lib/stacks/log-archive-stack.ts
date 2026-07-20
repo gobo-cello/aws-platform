@@ -1,4 +1,10 @@
-import { CfnOutput, RemovalPolicy, Stack, type StackProps } from "aws-cdk-lib";
+import {
+	CfnOutput,
+	Duration,
+	RemovalPolicy,
+	Stack,
+	type StackProps,
+} from "aws-cdk-lib";
 import { Effect, PolicyStatement, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { Key } from "aws-cdk-lib/aws-kms";
 import {
@@ -10,6 +16,7 @@ import {
 import type { Construct } from "constructs";
 import type { AwsAccountId } from "../config/accounts";
 import { createOrganizationTrailArn } from "../config/cloudtrail";
+import { cloudTrailRetentionPolicy } from "../config/cloudtrail-retention";
 import type { AwsOrganizationId } from "../config/organizations";
 import { applyPlatformTags, createPlatformTags } from "../config/tags";
 
@@ -103,6 +110,28 @@ export class LogArchiveStack extends Stack {
 			encryption: BucketEncryption.KMS,
 			encryptionKey,
 			removalPolicy: RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
+			lifecycleRules: [
+				{
+					id: "ExpireCloudTrailLogs",
+					enabled: true,
+					prefix: "AWSLogs/",
+					expiration: Duration.days(
+						cloudTrailRetentionPolicy.currentVersionRetentionDays,
+					),
+					noncurrentVersionExpiration: Duration.days(
+						cloudTrailRetentionPolicy.noncurrentVersionRetentionDays,
+					),
+					abortIncompleteMultipartUploadAfter: Duration.days(
+						cloudTrailRetentionPolicy.incompleteMultipartUploadRetentionDays,
+					),
+				},
+				{
+					id: "RemoveExpiredDeleteMarkers",
+					enabled: true,
+					prefix: "AWSLogs/",
+					expiredObjectDeleteMarker: true,
+				},
+			],
 		});
 
 		logBucket.addToResourcePolicy(
