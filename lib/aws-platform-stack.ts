@@ -18,7 +18,7 @@ export class AwsPlatformStack extends Stack {
 	) {
 		super(scope, id, {
 			...props,
-			terminationProtection: true,
+			terminationProtection: props.terminationProtection ?? true,
 		});
 
 		applyPlatformTags(this, createPlatformTags(props.environmentName));
