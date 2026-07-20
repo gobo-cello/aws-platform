@@ -87,3 +87,13 @@ AWS CDKとCloudFormationによる自動生成を優先する。
 - 運用手順に安定したidentifierが必要
 
 明示する場合は、理由をADRまたはcode commentに記録する。
+
+### Organization Trail name
+
+Organization Trailは、Log Archive accountのS3 bucket policyと
+KMS key policyから`aws:SourceArn`で参照する必要がある。
+
+Cross-account Stack間でTrail ARNを事前に確定できるよう、
+Trailのphysical nameのみ`OrganizationTrail`に固定する。
+
+S3 bucket名、KMS key ID、Stack名は固定しない。

@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
 import { App } from "aws-cdk-lib";
-import { AwsPlatformStack } from "../lib/aws-platform-stack";
-import { loadPlatformEnvironments } from "../lib/config/environments";
+import { loadPlatformConfiguration } from "../lib/config/environments";
+import { LogArchiveStack } from "../lib/stacks/log-archive-stack";
 
 const app = new App();
-const environments = loadPlatformEnvironments();
+const configuration = loadPlatformConfiguration();
 
-new AwsPlatformStack(app, "AwsPlatformStack", {
-	env: environments.management,
-	environmentName: "management",
+new LogArchiveStack(app, "LogArchiveStack", {
+	env: configuration.logArchive,
+	managementAccountId: configuration.management.account,
+	organizationId: configuration.organizationId,
 });

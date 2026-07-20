@@ -1,4 +1,8 @@
 import { type AwsAccountId, parseAwsAccountId } from "./accounts";
+import {
+	type AwsOrganizationId,
+	parseAwsOrganizationId,
+} from "./organizations";
 
 export const supportedAwsRegions = ["ap-northeast-1"] as const;
 
@@ -9,7 +13,8 @@ export interface AwsEnvironment {
 	readonly region: AwsRegion;
 }
 
-export interface PlatformEnvironments {
+export interface PlatformConfiguration {
+	readonly organizationId: AwsOrganizationId;
 	readonly management: AwsEnvironment;
 	readonly logArchive: AwsEnvironment;
 }
@@ -31,10 +36,13 @@ function readRequiredEnvironmentVariable(name: string): string {
 	return value;
 }
 
-export function loadPlatformEnvironments(): PlatformEnvironments {
+export function loadPlatformConfiguration(): PlatformConfiguration {
 	const region: AwsRegion = "ap-northeast-1";
 
 	return {
+		organizationId: parseAwsOrganizationId(
+			readRequiredEnvironmentVariable("AWS_ORGANIZATION_ID"),
+		),
 		management: {
 			account: parseAwsAccountId(
 				readRequiredEnvironmentVariable("AWS_MANAGEMENT_ACCOUNT_ID"),
@@ -47,5 +55,5 @@ export function loadPlatformEnvironments(): PlatformEnvironments {
 			),
 			region,
 		},
-	} satisfies PlatformEnvironments;
+	} satisfies PlatformConfiguration;
 }
