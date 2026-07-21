@@ -2,6 +2,7 @@ import { App } from "aws-cdk-lib";
 import { Match, Template } from "aws-cdk-lib/assertions";
 import { parseAwsAccountId } from "../lib/config/accounts";
 import { parseKmsKeyArn } from "../lib/config/kms";
+import { parseOrganizationalUnitId } from "../lib/config/organizational-units";
 import { parseS3BucketName } from "../lib/config/s3";
 import { OrganizationPoliciesStack } from "../lib/stacks/organization-policies-stack";
 
@@ -29,6 +30,9 @@ describe("OrganizationPoliciesStack", () => {
 					"12345678-1234-1234-1234-" +
 					"123456789012",
 			),
+			securityOuId: parseOrganizationalUnitId("ou-ab12-security1"),
+			productionOuId: parseOrganizationalUnitId("ou-ab12-product01"),
+			sandboxOuId: parseOrganizationalUnitId("ou-ab12-sandbox01"),
 		},
 	);
 
@@ -55,12 +59,22 @@ describe("OrganizationPoliciesStack", () => {
 		});
 	});
 
-	test("SCPをまだOUへattachしない", () => {
-		const policies = template.findResources("AWS::Organizations::Policy");
+	test("CloudTrail改変防止SCPを3つのOUへattachする", () => {
+		template.hasResourceProperties("AWS::Organizations::Policy", {
+			Name: "DenyCloudTrailTampering",
+			TargetIds: [
+				"ou-ab12-security1",
+				"ou-ab12-product01",
+				"ou-ab12-sandbox01",
+			],
+		});
+	});
 
-		for (const policy of Object.values(policies)) {
-			expect(policy.Properties.TargetIds).toBeUndefined();
-		}
+	test("Log Archive保護SCPをSecurity OUだけへattachする", () => {
+		template.hasResourceProperties("AWS::Organizations::Policy", {
+			Name: "ProtectCloudTrailLogArchive",
+			TargetIds: ["ou-ab12-security1"],
+		});
 	});
 
 	test("Stack termination protectionを有効にする", () => {

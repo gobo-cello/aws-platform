@@ -1,6 +1,10 @@
 import { type AwsAccountId, parseAwsAccountId } from "./accounts";
 import { type KmsKeyArn, parseKmsKeyArn } from "./kms";
 import {
+	type OrganizationalUnitId,
+	parseOrganizationalUnitId,
+} from "./organizational-units";
+import {
 	type AwsOrganizationId,
 	parseAwsOrganizationId,
 } from "./organizations";
@@ -15,8 +19,15 @@ export interface AwsEnvironment {
 	readonly region: AwsRegion;
 }
 
+export interface OrganizationalUnits {
+	readonly security: OrganizationalUnitId;
+	readonly production: OrganizationalUnitId;
+	readonly sandbox: OrganizationalUnitId;
+}
+
 export interface PlatformConfiguration {
 	readonly organizationId: AwsOrganizationId;
+	readonly organizationalUnits: OrganizationalUnits;
 	readonly management: AwsEnvironment;
 	readonly logArchive: AwsEnvironment;
 	readonly cloudTrailDestination: CloudTrailDestination;
@@ -51,6 +62,17 @@ export function loadPlatformConfiguration(): PlatformConfiguration {
 		organizationId: parseAwsOrganizationId(
 			readRequiredEnvironmentVariable("AWS_ORGANIZATION_ID"),
 		),
+		organizationalUnits: {
+			security: parseOrganizationalUnitId(
+				readRequiredEnvironmentVariable("AWS_SECURITY_OU_ID"),
+			),
+			production: parseOrganizationalUnitId(
+				readRequiredEnvironmentVariable("AWS_PRODUCTION_OU_ID"),
+			),
+			sandbox: parseOrganizationalUnitId(
+				readRequiredEnvironmentVariable("AWS_SANDBOX_OU_ID"),
+			),
+		},
 		management: {
 			account: parseAwsAccountId(
 				readRequiredEnvironmentVariable("AWS_MANAGEMENT_ACCOUNT_ID"),
