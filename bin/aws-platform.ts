@@ -6,6 +6,7 @@ import { AccessAnalyzerStack } from "../lib/stacks/access-analyzer-stack";
 import { LogArchiveStack } from "../lib/stacks/log-archive-stack";
 import { OrganizationPoliciesStack } from "../lib/stacks/organization-policies-stack";
 import { OrganizationTrailStack } from "../lib/stacks/organization-trail-stack";
+import { SecurityMonitoringStack } from "../lib/stacks/security-monitoring-stack";
 
 const app = new App();
 const configuration = loadPlatformConfiguration();
@@ -16,12 +17,16 @@ new LogArchiveStack(app, "LogArchiveStack", {
 	organizationId: configuration.organizationId,
 });
 
-new OrganizationTrailStack(app, "OrganizationTrailStack", {
-	env: configuration.management,
-	organizationId: configuration.organizationId,
-	logBucketName: configuration.cloudTrailDestination.bucketName,
-	kmsKeyArn: configuration.cloudTrailDestination.kmsKeyArn,
-});
+const organizationTrailStack = new OrganizationTrailStack(
+	app,
+	"OrganizationTrailStack",
+	{
+		env: configuration.management,
+		organizationId: configuration.organizationId,
+		logBucketName: configuration.cloudTrailDestination.bucketName,
+		kmsKeyArn: configuration.cloudTrailDestination.kmsKeyArn,
+	},
+);
 
 new AccessAnalyzerStack(app, "AccessAnalyzerStack", {
 	env: configuration.management,
@@ -35,4 +40,11 @@ new OrganizationPoliciesStack(app, "OrganizationPoliciesStack", {
 	securityOuId: configuration.organizationalUnits.security,
 	productionOuId: configuration.organizationalUnits.production,
 	sandboxOuId: configuration.organizationalUnits.sandbox,
+});
+
+new SecurityMonitoringStack(app, "SecurityMonitoringStack", {
+	env: configuration.management,
+	cloudTrailLogGroup: organizationTrailStack.cloudTrailLogGroup,
+	logArchiveAccountId: configuration.logArchive.account,
+	notificationEmail: configuration.securityNotificationEmail,
 });

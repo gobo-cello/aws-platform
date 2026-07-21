@@ -197,6 +197,49 @@ AWS_REGION=ap-northeast-1
 
 AWS account IDは認証情報ではありませんが、このリポジトリでは公開する必要がないため、環境変数またはGitHub Variablesから渡します。
 
+## AWS CLIプロファイル
+
+人間によるAWSへのアクセスにはIAM Identity Center(AWS SSO)を使用し、長期的なAWS access keyは使用しません。
+
+ローカルの `~/.aws/config` に、account・role単位でprofileを分けて設定します。実際のaccount IDやSSO start URLはリポジトリへ保存しないため、プレースホルダーで示します。
+
+```ini
+[profile management]
+sso_session = gobo-cello
+sso_account_id = 実際のManagement account ID
+sso_role_name = AdministratorAccess
+region = ap-northeast-1
+output = json
+
+[profile log-archive]
+sso_session = gobo-cello
+sso_account_id = 実際のLog Archive account ID
+sso_role_name = AdministratorAccess
+region = ap-northeast-1
+output = json
+
+[profile blog-production]
+sso_session = gobo-cello
+sso_account_id = 実際のProduction account ID
+sso_role_name = AdministratorAccess
+region = ap-northeast-1
+output = json
+
+[profile blog-sandbox]
+sso_session = gobo-cello
+sso_account_id = 実際のSandbox account ID
+sso_role_name = AdministratorAccess
+region = ap-northeast-1
+output = json
+
+[sso-session gobo-cello]
+sso_start_url = 実際のSSO Start URL
+sso_region = ap-northeast-1
+sso_registration_scopes = sso:account:access
+```
+
+`aws sso login --profile <profile名>` でログインしてから、各`--profile`オプションでコマンドを実行します。
+
 ## Git運用
 
 `main` branchは常にbuild、test、CDK synthが成功する状態を維持します。

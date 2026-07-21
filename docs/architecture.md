@@ -157,3 +157,24 @@ IAM Access Analyzerのdelegated administratorにはしない。
 
 将来、専用のsecurity tooling accountを作成した場合に
 delegated administratorへの移行を再評価する。
+
+## Security monitoring
+
+Organization Trailのmanagement eventsをManagement accountの
+CloudWatch Logsへ配信する。
+
+S3を監査ログの長期保存先とし、CloudWatch Logsは検知と
+短期調査のために90日保持する。
+
+以下をCloudWatch Logs metric filterとCloudWatch Alarmで監視する。
+
+- CloudTrailの停止、削除、設定変更
+- AWS OrganizationsおよびSCPの変更
+- root userの利用
+- Log Archive用S3 bucketおよびKMS keyへの破壊操作
+
+各metricは5分間の合計が1件以上の場合にALARMとし、
+Management accountのSNS topicからemail通知する。
+
+通知先email addressは環境変数から受け取り、
+repositoryには保存しない。

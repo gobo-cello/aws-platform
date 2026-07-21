@@ -1,4 +1,5 @@
 import { type AwsAccountId, parseAwsAccountId } from "./accounts";
+import { type EmailAddress, parseEmailAddress } from "./email";
 import { type KmsKeyArn, parseKmsKeyArn } from "./kms";
 import {
 	type OrganizationalUnitId,
@@ -31,6 +32,7 @@ export interface PlatformConfiguration {
 	readonly management: AwsEnvironment;
 	readonly logArchive: AwsEnvironment;
 	readonly cloudTrailDestination: CloudTrailDestination;
+	readonly securityNotificationEmail: EmailAddress;
 }
 
 export interface CloudTrailDestination {
@@ -93,5 +95,8 @@ export function loadPlatformConfiguration(): PlatformConfiguration {
 				readRequiredEnvironmentVariable("AWS_CLOUDTRAIL_KMS_KEY_ARN"),
 			),
 		},
+		securityNotificationEmail: parseEmailAddress(
+			readRequiredEnvironmentVariable("SECURITY_NOTIFICATION_EMAIL"),
+		),
 	} satisfies PlatformConfiguration;
 }

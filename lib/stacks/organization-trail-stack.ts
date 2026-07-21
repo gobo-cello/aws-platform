@@ -1,5 +1,12 @@
-import { CfnOutput, Stack, type StackProps } from "aws-cdk-lib";
+import { CfnOutput, RemovalPolicy, Stack, type StackProps } from "aws-cdk-lib";
 import { CfnTrail } from "aws-cdk-lib/aws-cloudtrail";
+import {
+	Effect,
+	PolicyStatement,
+	Role,
+	ServicePrincipal,
+} from "aws-cdk-lib/aws-iam";
+import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import type { Construct } from "constructs";
 import { organizationTrailName } from "../config/cloudtrail";
 import type { KmsKeyArn } from "../config/kms";
@@ -14,6 +21,8 @@ export interface OrganizationTrailStackProps extends StackProps {
 }
 
 export class OrganizationTrailStack extends Stack {
+	public readonly cloudTrailLogGroup: LogGroup;
+
 	public constructor(
 		scope: Construct,
 		id: string,
@@ -23,6 +32,27 @@ export class OrganizationTrailStack extends Stack {
 			...props,
 			terminationProtection: true,
 		});
+
+		this.cloudTrailLogGroup = new LogGroup(this, "CloudTrailLogGroup", {
+			retention: RetentionDays.THREE_MONTHS,
+			removalPolicy: RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
+		});
+
+		const cloudTrailToCloudWatchLogsRole = new Role(
+			this,
+			"CloudTrailToCloudWatchLogsRole",
+			{
+				assumedBy: new ServicePrincipal("cloudtrail.amazonaws.com"),
+			},
+		);
+
+		cloudTrailToCloudWatchLogsRole.addToPolicy(
+			new PolicyStatement({
+				effect: Effect.ALLOW,
+				actions: ["logs:CreateLogStream", "logs:PutLogEvents"],
+				resources: [this.cloudTrailLogGroup.logGroupArn],
+			}),
+		);
 
 		const trail = new CfnTrail(this, "OrganizationTrail", {
 			trailName: organizationTrailName,
@@ -36,6 +66,9 @@ export class OrganizationTrailStack extends Stack {
 			s3BucketName: props.logBucketName,
 			kmsKeyId: props.kmsKeyArn,
 
+			cloudWatchLogsLogGroupArn: this.cloudTrailLogGroup.logGroupArn,
+			cloudWatchLogsRoleArn: cloudTrailToCloudWatchLogsRole.roleArn,
+
 			eventSelectors: [
 				{
 					includeManagementEvents: true,
@@ -44,10 +77,16 @@ export class OrganizationTrailStack extends Stack {
 			],
 		});
 
+		trail.node.addDependency(cloudTrailToCloudWatchLogsRole);
+
 		applyPlatformTags(this, createPlatformTags("management"));
 
 		new CfnOutput(this, "OrganizationTrailArn", {
 			value: trail.attrArn,
+		});
+
+		new CfnOutput(this, "CloudTrailLogGroupName", {
+			value: this.cloudTrailLogGroup.logGroupName,
 		});
 	}
 }
