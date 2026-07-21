@@ -32,4 +32,7 @@ new OrganizationPoliciesStack(app, "OrganizationPoliciesStack", {
 	logArchiveEnvironment: configuration.logArchive,
 	cloudTrailLogBucketName: configuration.cloudTrailDestination.bucketName,
 	cloudTrailKmsKeyArn: configuration.cloudTrailDestination.kmsKeyArn,
+	securityOuId: configuration.organizationalUnits.security,
+	productionOuId: configuration.organizationalUnits.production,
+	sandboxOuId: configuration.organizationalUnits.sandbox,
 });

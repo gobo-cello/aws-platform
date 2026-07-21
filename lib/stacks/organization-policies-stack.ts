@@ -8,6 +8,7 @@ import {
 } from "../config/cloudtrail-guardrails";
 import type { AwsEnvironment } from "../config/environments";
 import type { KmsKeyArn } from "../config/kms";
+import type { OrganizationalUnitId } from "../config/organizational-units";
 import type { S3BucketName } from "../config/s3";
 import { applyPlatformTags, createPlatformTags } from "../config/tags";
 
@@ -15,6 +16,9 @@ export interface OrganizationPoliciesStackProps extends StackProps {
 	readonly logArchiveEnvironment: AwsEnvironment;
 	readonly cloudTrailLogBucketName: S3BucketName;
 	readonly cloudTrailKmsKeyArn: KmsKeyArn;
+	readonly securityOuId: OrganizationalUnitId;
+	readonly productionOuId: OrganizationalUnitId;
+	readonly sandboxOuId: OrganizationalUnitId;
 }
 
 export class OrganizationPoliciesStack extends Stack {
@@ -42,6 +46,11 @@ export class OrganizationPoliciesStack extends Stack {
 					"Prevents member accounts from stopping or modifying CloudTrail logging.",
 				type: "SERVICE_CONTROL_POLICY",
 				content: denyCloudTrailTamperingPolicy,
+				targetIds: [
+					props.securityOuId,
+					props.productionOuId,
+					props.sandboxOuId,
+				],
 			},
 		);
 
@@ -58,6 +67,7 @@ export class OrganizationPoliciesStack extends Stack {
 					kmsKeyArn: props.cloudTrailKmsKeyArn,
 					deploymentRoleArn,
 				}),
+				targetIds: [props.securityOuId],
 			},
 		);
 
