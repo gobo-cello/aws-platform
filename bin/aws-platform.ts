@@ -3,6 +3,7 @@
 import { App } from "aws-cdk-lib";
 import { loadPlatformConfiguration } from "../lib/config/environments";
 import { AccessAnalyzerStack } from "../lib/stacks/access-analyzer-stack";
+import { DnsStack } from "../lib/stacks/dns-stack";
 import { LogArchiveStack } from "../lib/stacks/log-archive-stack";
 import { OrganizationPoliciesStack } from "../lib/stacks/organization-policies-stack";
 import { OrganizationTrailStack } from "../lib/stacks/organization-trail-stack";
@@ -47,4 +48,9 @@ new SecurityMonitoringStack(app, "SecurityMonitoringStack", {
 	cloudTrailLogGroup: organizationTrailStack.cloudTrailLogGroup,
 	logArchiveAccountId: configuration.logArchive.account,
 	notificationEmail: configuration.securityNotificationEmail,
+});
+
+new DnsStack(app, "DnsStack", {
+	env: configuration.management,
+	blogSubdomainNameServers: configuration.blogSubdomainNameServers,
 });
