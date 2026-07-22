@@ -1,4 +1,5 @@
 import { type AwsAccountId, parseAwsAccountId } from "./accounts";
+import { parseNameServers } from "./dns";
 import { type EmailAddress, parseEmailAddress } from "./email";
 import { type KmsKeyArn, parseKmsKeyArn } from "./kms";
 import {
@@ -33,6 +34,7 @@ export interface PlatformConfiguration {
 	readonly logArchive: AwsEnvironment;
 	readonly cloudTrailDestination: CloudTrailDestination;
 	readonly securityNotificationEmail: EmailAddress;
+	readonly blogSubdomainNameServers?: readonly string[] | undefined;
 }
 
 export interface CloudTrailDestination {
@@ -57,8 +59,22 @@ function readRequiredEnvironmentVariable(name: string): string {
 	return value;
 }
 
+function readOptionalEnvironmentVariable(name: string): string | undefined {
+	const value: string | undefined = process.env[name];
+
+	return value === undefined || value.length === 0 ? undefined : value;
+}
+
 export function loadPlatformConfiguration(): PlatformConfiguration {
 	const region: AwsRegion = "ap-northeast-1";
+
+	const blogSubdomainNameServersValue = readOptionalEnvironmentVariable(
+		"BLOG_SUBDOMAIN_NAME_SERVERS",
+	);
+	const blogSubdomainNameServers =
+		blogSubdomainNameServersValue === undefined
+			? undefined
+			: parseNameServers(blogSubdomainNameServersValue);
 
 	return {
 		organizationId: parseAwsOrganizationId(
@@ -98,5 +114,6 @@ export function loadPlatformConfiguration(): PlatformConfiguration {
 		securityNotificationEmail: parseEmailAddress(
 			readRequiredEnvironmentVariable("SECURITY_NOTIFICATION_EMAIL"),
 		),
+		blogSubdomainNameServers,
 	} satisfies PlatformConfiguration;
 }

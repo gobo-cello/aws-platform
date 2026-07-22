@@ -178,3 +178,34 @@ Management accountのSNS topicからemail通知する。
 
 通知先email addressは環境変数から受け取り、
 repositoryには保存しない。
+
+## DNS
+
+`gobo-cello.com`のapex hosted zoneをManagement accountに配置する。
+
+```text
+gobo-cello.com (apex hosted zone、aws-platform管理)
+  └─ NS delegation → blog.gobo-cello.com (blog-production accountが所有するhosted zone)
+```
+
+apex hosted zone自体は各サービス用のレコードを直接持たず、
+各サブドメインを対応するAWS accountのhosted zoneへNS delegationする。
+
+これにより、将来別のサービス用サブドメイン(例: `api.gobo-cello.com`)が
+増えた場合も、apex側にNS delegationレコードを1つ追加するだけで、
+そのサービスのaccountが証明書・DNSを完全に自己完結して管理できる。
+
+### Cross-repositoryでのname server受け渡し
+
+`blog.gobo-cello.com`のhosted zoneは`blog`リポジトリのCDKで作成され、
+そのhosted zoneのname serverは`BLOG_SUBDOMAIN_NAME_SERVERS`環境変数
+経由でこのリポジトリへ渡す(secretではなく、実装の詳細をrepository間で
+分離するための値)。`blog`側のhosted zoneがまだ存在しない間は
+この環境変数は未設定でよく、`DnsStack`はNS delegationレコードを
+作成しない。
+
+### DNSSEC
+
+現時点ではDNSSECを設定しない。鍵管理・KSKローテーションなど
+運用負荷が増える一方、現状のリスクは小さいため、必要になった時点で
+改めて設定を検討する。
