@@ -4,6 +4,7 @@ export type AwsOrganizationId = string & {
 	readonly [awsOrganizationIdBrand]: "AwsOrganizationId";
 };
 
+/** @internal テストの toThrow アサーションのためだけに export しており、production コードからは参照されない */
 export class InvalidAwsOrganizationIdError extends Error {
 	public constructor(value: unknown) {
 		super(`Invalid AWS organization ID: ${String(value)}`);

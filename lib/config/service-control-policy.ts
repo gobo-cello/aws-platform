@@ -1,4 +1,4 @@
-export interface ServiceControlPolicyStatement {
+interface ServiceControlPolicyStatement {
 	readonly Sid: string;
 	readonly Effect: "Deny";
 	readonly Action: readonly string[];
