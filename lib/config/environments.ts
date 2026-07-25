@@ -12,7 +12,7 @@ import {
 } from "./organizations";
 import { parseS3BucketName, type S3BucketName } from "./s3";
 
-export const supportedAwsRegions = ["ap-northeast-1"] as const;
+const supportedAwsRegions = ["ap-northeast-1"] as const;
 
 export type AwsRegion = (typeof supportedAwsRegions)[number];
 
@@ -21,7 +21,7 @@ export interface AwsEnvironment {
 	readonly region: AwsRegion;
 }
 
-export interface OrganizationalUnits {
+interface OrganizationalUnits {
 	readonly security: OrganizationalUnitId;
 	readonly production: OrganizationalUnitId;
 	readonly sandbox: OrganizationalUnitId;
@@ -37,12 +37,12 @@ export interface PlatformConfiguration {
 	readonly blogSubdomainNameServers?: readonly string[] | undefined;
 }
 
-export interface CloudTrailDestination {
+interface CloudTrailDestination {
 	readonly bucketName: S3BucketName;
 	readonly kmsKeyArn: KmsKeyArn;
 }
 
-export class MissingEnvironmentVariableError extends Error {
+class MissingEnvironmentVariableError extends Error {
 	public constructor(name: string) {
 		super(`Required environment variable is missing: ${name}`);
 		this.name = "MissingEnvironmentVariableError";

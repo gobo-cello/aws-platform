@@ -1,5 +1,6 @@
 export const apexDomainName = "gobo-cello.com" as const;
 
+/** @internal テストの toThrow アサーションのためだけに export しており、production コードからは参照されない */
 export class InvalidNameServersError extends Error {
 	public constructor(value: unknown) {
 		super(`Invalid name servers: ${String(value)}`);

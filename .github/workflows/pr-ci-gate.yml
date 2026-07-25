@@ -34,6 +34,24 @@ jobs:
       - uses: ./.github/actions/setup-node-npm
       - run: npm test
 
+  knip:
+    runs-on: ubuntu-slim
+    env:
+      KNIP_DISABLE_RAW_TRANSFER: '1'
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: ./.github/actions/setup-node-npm
+      - run: npx knip --reporter github-actions
+
+  knip-production:
+    runs-on: ubuntu-slim
+    env:
+      KNIP_DISABLE_RAW_TRANSFER: '1'
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: ./.github/actions/setup-node-npm
+      - run: npx knip --production --strict --reporter github-actions
+
   cdk-synth:
     runs-on: ubuntu-slim
     steps:
@@ -56,6 +74,8 @@ jobs:
       - biome
       - build
       - jest
+      - knip
+      - knip-production
       - cdk-synth
     if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-slim

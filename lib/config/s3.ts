@@ -4,6 +4,7 @@ export type S3BucketName = string & {
 	readonly [s3BucketNameBrand]: "S3BucketName";
 };
 
+/** @internal テストの toThrow アサーションのためだけに export しており、production コードからは参照されない */
 export class InvalidS3BucketNameError extends Error {
 	public constructor(value: unknown) {
 		super(`Invalid S3 bucket name: ${String(value)}`);

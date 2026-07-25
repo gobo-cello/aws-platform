@@ -4,6 +4,7 @@ export type KmsKeyArn = string & {
 	readonly [kmsKeyArnBrand]: "KmsKeyArn";
 };
 
+/** @internal テストの toThrow アサーションのためだけに export しており、production コードからは参照されない */
 export class InvalidKmsKeyArnError extends Error {
 	public constructor(value: unknown) {
 		super(`Invalid KMS key ARN: ${String(value)}`);
