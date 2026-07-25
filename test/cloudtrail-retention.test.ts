@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import { cloudTrailRetentionPolicy } from "../lib/config/cloudtrail-retention";
 
 describe("cloudTrailRetentionPolicy", () => {

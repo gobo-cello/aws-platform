@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import { InvalidKmsKeyArnError, parseKmsKeyArn } from "../lib/config/kms";
 
 describe("parseKmsKeyArn", () => {

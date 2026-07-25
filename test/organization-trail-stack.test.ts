@@ -1,5 +1,6 @@
 import { App } from "aws-cdk-lib";
 import { Match, Template } from "aws-cdk-lib/assertions";
+import { describe, expect, test } from "vitest";
 import { parseAwsAccountId } from "../lib/config/accounts";
 import { parseKmsKeyArn } from "../lib/config/kms";
 import { parseAwsOrganizationId } from "../lib/config/organizations";
