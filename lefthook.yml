@@ -15,6 +15,10 @@ pre-push:
       run: npm test
     cdk-synth:
       run: npx cdk synth
+    knip:
+      run: npm run knip
+    knip-production:
+      run: npm run knip:production
 
 commit-msg:
   commands:
