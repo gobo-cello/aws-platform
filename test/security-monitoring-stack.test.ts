@@ -1,6 +1,7 @@
 import { App, Stack } from "aws-cdk-lib";
 import { Match, Template } from "aws-cdk-lib/assertions";
 import { LogGroup } from "aws-cdk-lib/aws-logs";
+import { describe, expect, test } from "vitest";
 import { parseAwsAccountId } from "../lib/config/accounts";
 import { parseEmailAddress } from "../lib/config/email";
 import { SecurityMonitoringStack } from "../lib/stacks/security-monitoring-stack";

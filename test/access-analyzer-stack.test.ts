@@ -1,5 +1,6 @@
 import { App } from "aws-cdk-lib";
 import { Template } from "aws-cdk-lib/assertions";
+import { describe, expect, test } from "vitest";
 import { parseAwsAccountId } from "../lib/config/accounts";
 import { AccessAnalyzerStack } from "../lib/stacks/access-analyzer-stack";
 

@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import { InvalidS3BucketNameError, parseS3BucketName } from "../lib/config/s3";
 
 describe("parseS3BucketName", () => {

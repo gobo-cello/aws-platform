@@ -4,7 +4,7 @@
 	"scripts": {
 		"build": "tsc",
 		"watch": "tsc -w",
-		"test": "jest",
+		"test": "vitest run",
 		"cdk": "cdk",
 		"check": "biome check --write .",
 		"check:unsafe": "biome check --write --unsafe .",
@@ -18,15 +18,12 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.5",
-		"@swc/core": "^1.15.46",
-		"@swc/jest": "^0.2.39",
-		"@types/jest": "^30",
 		"@types/node": "^26.1.1",
 		"aws-cdk": "2.1132.0",
-		"jest": "^30",
 		"knip": "^6.29.0",
 		"lefthook": "^2.1.10",
 		"tsx": "^4.23.0",
-		"typescript": "~7.0.2"
+		"typescript": "~7.0.2",
+		"vitest": "^4.1.10"
 	}
 }
