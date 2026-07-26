@@ -1,6 +1,6 @@
 import { App } from "aws-cdk-lib";
 import { Match, Template } from "aws-cdk-lib/assertions";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 import { parseAwsAccountId } from "../lib/config/accounts";
 import { parseKmsKeyArn } from "../lib/config/kms";
 import { parseOrganizationalUnitId } from "../lib/config/organizational-units";
@@ -39,11 +39,11 @@ describe("OrganizationPoliciesStack", () => {
 
 	const template = Template.fromStack(stack);
 
-	test("2つのSCPを作成する", () => {
+	it("2つのSCPを作成する", () => {
 		template.resourceCountIs("AWS::Organizations::Policy", 2);
 	});
 
-	test("CloudTrail改変防止SCPを作成する", () => {
+	it("CloudTrail改変防止SCPを作成する", () => {
 		template.hasResourceProperties("AWS::Organizations::Policy", {
 			Name: "DenyCloudTrailTampering",
 			Type: "SERVICE_CONTROL_POLICY",
@@ -53,14 +53,14 @@ describe("OrganizationPoliciesStack", () => {
 		});
 	});
 
-	test("Log Archive保護SCPを作成する", () => {
+	it("Log Archive保護SCPを作成する", () => {
 		template.hasResourceProperties("AWS::Organizations::Policy", {
 			Name: "ProtectCloudTrailLogArchive",
 			Type: "SERVICE_CONTROL_POLICY",
 		});
 	});
 
-	test("CloudTrail改変防止SCPを3つのOUへattachする", () => {
+	it("CloudTrail改変防止SCPを3つのOUへattachする", () => {
 		template.hasResourceProperties("AWS::Organizations::Policy", {
 			Name: "DenyCloudTrailTampering",
 			TargetIds: [
@@ -71,14 +71,14 @@ describe("OrganizationPoliciesStack", () => {
 		});
 	});
 
-	test("Log Archive保護SCPをSecurity OUだけへattachする", () => {
+	it("Log Archive保護SCPをSecurity OUだけへattachする", () => {
 		template.hasResourceProperties("AWS::Organizations::Policy", {
 			Name: "ProtectCloudTrailLogArchive",
 			TargetIds: ["ou-ab12-security1"],
 		});
 	});
 
-	test("Stack termination protectionを有効にする", () => {
+	it("Stack termination protectionを有効にする", () => {
 		expect(stack.terminationProtection).toBe(true);
 	});
 });

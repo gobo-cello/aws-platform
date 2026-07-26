@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 import { parseAwsAccountId } from "../lib/config/accounts";
 import { createCdkCloudFormationExecutionRoleArn } from "../lib/config/cdk-bootstrap";
 import {
@@ -9,7 +9,7 @@ import { parseKmsKeyArn } from "../lib/config/kms";
 import { parseS3BucketName } from "../lib/config/s3";
 
 describe("CloudTrail SCP guardrails", () => {
-	test("CloudTrail停止と設定変更を拒否する", () => {
+	it("CloudTrail停止と設定変更を拒否する", () => {
 		const statement = denyCloudTrailTamperingPolicy.Statement[0];
 
 		expect(statement.Action).toEqual(
@@ -23,7 +23,7 @@ describe("CloudTrail SCP guardrails", () => {
 		);
 	});
 
-	test("Log Archive resourceを特定resourceへ限定する", () => {
+	it("Log Archive resourceを特定resourceへ限定する", () => {
 		const logArchiveAccountId = parseAwsAccountId("222222222222");
 
 		const deploymentRoleArn = createCdkCloudFormationExecutionRoleArn(
@@ -66,7 +66,7 @@ describe("CloudTrail SCP guardrails", () => {
 		);
 	});
 
-	test("CDK CloudFormation execution roleだけを例外にする", () => {
+	it("CDK CloudFormation execution roleだけを例外にする", () => {
 		const accountId = parseAwsAccountId("222222222222");
 
 		const deploymentRoleArn = createCdkCloudFormationExecutionRoleArn(

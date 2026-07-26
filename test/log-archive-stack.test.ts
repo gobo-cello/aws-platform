@@ -1,6 +1,6 @@
 import { App } from "aws-cdk-lib";
 import { Match, Template } from "aws-cdk-lib/assertions";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 import { parseAwsAccountId } from "../lib/config/accounts";
 import { parseAwsOrganizationId } from "../lib/config/organizations";
 import { LogArchiveStack } from "../lib/stacks/log-archive-stack";
@@ -19,20 +19,20 @@ describe("LogArchiveStack", () => {
 
 	const template = Template.fromStack(stack);
 
-	test("KMS key rotationを有効にする", () => {
+	it("KMS key rotationを有効にする", () => {
 		template.hasResourceProperties("AWS::KMS::Key", {
 			EnableKeyRotation: true,
 		});
 	});
 
-	test("KMS keyを削除・置換時に保持する", () => {
+	it("KMS keyを削除・置換時に保持する", () => {
 		template.hasResource("AWS::KMS::Key", {
 			DeletionPolicy: "RetainExceptOnCreate",
 			UpdateReplacePolicy: "Retain",
 		});
 	});
 
-	test("S3 bucketを安全に構成する", () => {
+	it("S3 bucketを安全に構成する", () => {
 		template.hasResourceProperties("AWS::S3::Bucket", {
 			VersioningConfiguration: {
 				Status: "Enabled",
@@ -62,7 +62,7 @@ describe("LogArchiveStack", () => {
 		});
 	});
 
-	test("CloudTrailログのLifecycle policyを設定する", () => {
+	it("CloudTrailログのLifecycle policyを設定する", () => {
 		template.hasResourceProperties("AWS::S3::Bucket", {
 			LifecycleConfiguration: {
 				Rules: Match.arrayWith([
@@ -89,7 +89,7 @@ describe("LogArchiveStack", () => {
 		});
 	});
 
-	test("CloudTrailのorganization pathを許可する", () => {
+	it("CloudTrailのorganization pathを許可する", () => {
 		template.hasResourceProperties("AWS::S3::BucketPolicy", {
 			PolicyDocument: Match.objectLike({
 				Statement: Match.arrayWith([
@@ -112,7 +112,7 @@ describe("LogArchiveStack", () => {
 		});
 	});
 
-	test("Stack termination protectionを有効にする", () => {
+	it("Stack termination protectionを有効にする", () => {
 		expect(stack.terminationProtection).toBe(true);
 	});
 });

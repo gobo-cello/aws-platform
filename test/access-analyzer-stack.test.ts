@@ -1,6 +1,6 @@
 import { App } from "aws-cdk-lib";
 import { Template } from "aws-cdk-lib/assertions";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 import { parseAwsAccountId } from "../lib/config/accounts";
 import { AccessAnalyzerStack } from "../lib/stacks/access-analyzer-stack";
 
@@ -16,13 +16,13 @@ describe("AccessAnalyzerStack", () => {
 
 	const template = Template.fromStack(stack);
 
-	test("Organization external access analyzerを作成する", () => {
+	it("Organization external access analyzerを作成する", () => {
 		template.hasResourceProperties("AWS::AccessAnalyzer::Analyzer", {
 			Type: "ORGANIZATION",
 		});
 	});
 
-	test("Analyzer名を固定しない", () => {
+	it("Analyzer名を固定しない", () => {
 		const analyzers = template.findResources("AWS::AccessAnalyzer::Analyzer");
 
 		const [analyzer] = Object.values(analyzers);
@@ -33,7 +33,7 @@ describe("AccessAnalyzerStack", () => {
 		expect(analyzer.Properties.AnalyzerName).toBeUndefined();
 	});
 
-	test("archive ruleを初期設定しない", () => {
+	it("archive ruleを初期設定しない", () => {
 		const analyzers = template.findResources("AWS::AccessAnalyzer::Analyzer");
 
 		const [analyzer] = Object.values(analyzers);
@@ -44,7 +44,7 @@ describe("AccessAnalyzerStack", () => {
 		expect(analyzer.Properties.ArchiveRules).toBeUndefined();
 	});
 
-	test("Stack termination protectionを有効にする", () => {
+	it("Stack termination protectionを有効にする", () => {
 		expect(stack.terminationProtection).toBe(true);
 	});
 });
