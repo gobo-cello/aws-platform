@@ -97,6 +97,12 @@
 - 独立したテストケースやデータ駆動テストとして表現した方が自然な場合は、`test`を使用してよい。
 - 同一のテストスイート内で、意図なく`it`と`test`を混在させないこと。
 
+## 環境変数を追加・変更する際に確認するファイル
+
+- `lib/config/*.ts`: 環境変数のparse処理
+- `.env.example`: ローカル開発用の一覧
+- `.github/workflows/pr-ci-gate.yml`: `cdk-synth`ジョブのenv
+
 ## GitHub Actions のバージョン固定
 
 - ワークフロー (`.github/workflows/*.yml`) で使用する GitHub Actions は、可変なタグ (`@v4` など) ではなく、固定されたコミットハッシュで指定すること。
