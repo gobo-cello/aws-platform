@@ -1,20 +1,26 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it, test } from "vitest";
 import {
 	InvalidEmailAddressError,
 	parseEmailAddress,
 } from "../lib/config/email";
 
 describe("parseEmailAddress", () => {
-	test("正しいメールアドレスを受け入れる", () => {
-		expect(parseEmailAddress("security@example.com")).toBe(
-			"security@example.com",
-		);
+	describe("正しいメールアドレスが与えられた場合", () => {
+		it("そのまま受け入れる", () => {
+			expect(parseEmailAddress("security@example.com")).toBe(
+				"security@example.com",
+			);
+		});
 	});
 
-	test.each([undefined, null, "", "not-an-email", "@example.com", "user@"])(
-		"不正な値を拒否する: %p",
-		(value: unknown) => {
-			expect(() => parseEmailAddress(value)).toThrow(InvalidEmailAddressError);
-		},
-	);
+	describe("不正な値が与えられた場合", () => {
+		test.each([undefined, null, "", "not-an-email", "@example.com", "user@"])(
+			"InvalidEmailAddressErrorを投げる: %p",
+			(value: unknown) => {
+				expect(() => parseEmailAddress(value)).toThrow(
+					InvalidEmailAddressError,
+				);
+			},
+		);
+	});
 });

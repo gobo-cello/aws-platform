@@ -1,6 +1,6 @@
 import { App } from "aws-cdk-lib";
 import { Match, Template } from "aws-cdk-lib/assertions";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 import { parseAwsAccountId } from "../lib/config/accounts";
 import { parseKmsKeyArn } from "../lib/config/kms";
 import { parseAwsOrganizationId } from "../lib/config/organizations";
@@ -27,7 +27,7 @@ describe("OrganizationTrailStack", () => {
 
 	const template = Template.fromStack(stack);
 
-	test("Organization Trailを構成する", () => {
+	it("Organization Trailを構成する", () => {
 		template.hasResourceProperties("AWS::CloudTrail::Trail", {
 			TrailName: "OrganizationTrail",
 			IsLogging: true,
@@ -50,7 +50,7 @@ describe("OrganizationTrailStack", () => {
 		});
 	});
 
-	test("Data eventsを設定しない", () => {
+	it("Data eventsを設定しない", () => {
 		template.hasResourceProperties("AWS::CloudTrail::Trail", {
 			EventSelectors: [
 				Match.not(
@@ -62,24 +62,24 @@ describe("OrganizationTrailStack", () => {
 		});
 	});
 
-	test("Stack termination protectionを有効にする", () => {
+	it("Stack termination protectionを有効にする", () => {
 		expect(stack.terminationProtection).toBe(true);
 	});
 
-	test("CloudWatch Logsへ配信する", () => {
+	it("CloudWatch Logsへ配信する", () => {
 		template.hasResourceProperties("AWS::CloudTrail::Trail", {
 			CloudWatchLogsLogGroupArn: Match.anyValue(),
 			CloudWatchLogsRoleArn: Match.anyValue(),
 		});
 	});
 
-	test("CloudWatch Logsのretentionを90日にする", () => {
+	it("CloudWatch Logsのretentionを90日にする", () => {
 		template.hasResourceProperties("AWS::Logs::LogGroup", {
 			RetentionInDays: 90,
 		});
 	});
 
-	test("CloudTrailだけがLog Groupへ書き込めるroleを作成する", () => {
+	it("CloudTrailだけがLog Groupへ書き込めるroleを作成する", () => {
 		template.hasResourceProperties("AWS::IAM::Role", {
 			AssumeRolePolicyDocument: Match.objectLike({
 				Statement: Match.arrayWith([
@@ -93,7 +93,7 @@ describe("OrganizationTrailStack", () => {
 		});
 	});
 
-	test("CloudTrailへLog Group書き込みだけを許可する", () => {
+	it("CloudTrailへLog Group書き込みだけを許可する", () => {
 		template.hasResourceProperties("AWS::IAM::Policy", {
 			PolicyDocument: Match.objectLike({
 				Statement: Match.arrayWith([

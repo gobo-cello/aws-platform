@@ -1,7 +1,7 @@
 import { App, Stack } from "aws-cdk-lib";
 import { Match, Template } from "aws-cdk-lib/assertions";
 import { LogGroup } from "aws-cdk-lib/aws-logs";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 import { parseAwsAccountId } from "../lib/config/accounts";
 import { parseEmailAddress } from "../lib/config/email";
 import { SecurityMonitoringStack } from "../lib/stacks/security-monitoring-stack";
@@ -34,7 +34,7 @@ describe("SecurityMonitoringStack", () => {
 
 	const template = Template.fromStack(stack);
 
-	test("SNS topicとemail subscriptionを作成する", () => {
+	it("SNS topicとemail subscriptionを作成する", () => {
 		template.resourceCountIs("AWS::SNS::Topic", 1);
 		template.hasResourceProperties("AWS::SNS::Subscription", {
 			Protocol: "email",
@@ -42,15 +42,15 @@ describe("SecurityMonitoringStack", () => {
 		});
 	});
 
-	test("4つのmetric filterを作成する", () => {
+	it("4つのmetric filterを作成する", () => {
 		template.resourceCountIs("AWS::Logs::MetricFilter", 4);
 	});
 
-	test("4つのCloudWatch alarmを作成する", () => {
+	it("4つのCloudWatch alarmを作成する", () => {
 		template.resourceCountIs("AWS::CloudWatch::Alarm", 4);
 	});
 
-	test("alarmは5分間に1件で発報する", () => {
+	it("alarmは5分間に1件で発報する", () => {
 		template.hasResourceProperties("AWS::CloudWatch::Alarm", {
 			Threshold: 1,
 			EvaluationPeriods: 1,
@@ -61,7 +61,7 @@ describe("SecurityMonitoringStack", () => {
 		});
 	});
 
-	test("termination protectionを有効にする", () => {
+	it("termination protectionを有効にする", () => {
 		expect(stack.terminationProtection).toBe(true);
 	});
 });
