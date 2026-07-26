@@ -1,21 +1,21 @@
-# 0005: gobo-cello.comのapex hosted zoneとサブドメイン委譲
+# 0005: example.comのapex hosted zoneとサブドメイン委譲
 
 - Status: Accepted
 - Date: 2026-07-22
 
 ## Context
 
-`gobo-cello.com`はお名前.comで登録済みで、現時点ではブログ以外の
+`example.com`はお名前.comで登録済みで、現時点ではブログ以外の
 用途(メール等)には使用していない。
 
 ブログは`blog`リポジトリの`blog-production` accountで
-`blog.gobo-cello.com`として公開する予定であり、将来的には
-ブログ以外のサブドメイン(例: `api.gobo-cello.com`)が
+`blog.example.com`として公開する予定であり、将来的には
+ブログ以外のサブドメイン(例: `api.example.com`)が
 別のAWS accountへ増えていくことも想定している。
 
 ## Decision
 
-apex hosted zone(`gobo-cello.com`)は、このリポジトリが
+apex hosted zone(`example.com`)は、このリポジトリが
 Management accountに作成する。CloudTrail・IAM Access Analyzer・
 SCPなど、既存の組織共通基盤と同じ置き場所とする。
 
@@ -23,8 +23,8 @@ SCPなど、既存の組織共通基盤と同じ置き場所とする。
 NS delegationで各サービスのAWS accountへ委譲する。
 
 ```text
-gobo-cello.com (apex hosted zone、Management account)
-  └─ NS delegation → blog.gobo-cello.com (blog-production account所有)
+example.com (apex hosted zone、Management account)
+  └─ NS delegation → blog.example.com (blog-production account所有)
 ```
 
 apex hosted zone自体は、サブドメインのNS delegationレコード以外の
@@ -37,7 +37,7 @@ NS delegationレコードの追加だけで済み、各サービスのaccountは
 
 ### 委譲するname serverの受け渡し方法
 
-`blog.gobo-cello.com`のhosted zoneは`blog`リポジトリのCDKが
+`blog.example.com`のhosted zoneは`blog`リポジトリのCDKが
 作成するため、そのname serverは`blog`リポジトリのCDK deploy完了後に
 初めて分かる。この値は`BLOG_SUBDOMAIN_NAME_SERVERS`環境変数(カンマ区切り)
 としてこのリポジトリへ渡し、`DnsStack`がNS delegationレコードを作成する。
@@ -52,7 +52,7 @@ DNSSECは鍵管理・KSKローテーションなど運用負荷が増える。
 
 ### 既存レコードの移行は不要
 
-`gobo-cello.com`は現時点でブログ以外の用途(メール等)で使用していない。
+`example.com`は現時点でブログ以外の用途(メール等)で使用していない。
 そのため、お名前.comのネームサーバーをRoute 53へ切り替える前に、
 既存レコードをRoute 53側へ複製する作業は不要と判断した。
 
@@ -63,7 +63,7 @@ DNSSECは鍵管理・KSKローテーションなど運用負荷が増える。
 - `blog`リポジトリ側のhosted zone作成 → name server取得 →
   このリポジトリへの環境変数設定 → 再deploy、という順序を踏む必要があり、
   1回のdeployでは完結しない。
-- 将来`sandbox.blog.gobo-cello.com`を追加する場合も、
-  `blog.gobo-cello.com`(blog-production所有)から`blog-sandbox` accountへ
+- 将来`sandbox.blog.example.com`を追加する場合も、
+  `blog.example.com`(blog-production所有)から`blog-sandbox` accountへ
   同じNS delegationパターンを一段再帰させる想定である
   (詳細は`blog`リポジトリのADRを参照)。

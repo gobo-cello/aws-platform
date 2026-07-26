@@ -1,6 +1,6 @@
 # aws-platform
 
-`gobo-cello.com` を支えるAWS組織共通基盤のInfrastructure as Codeリポジトリです。
+`example.com` を支えるAWS組織共通基盤のInfrastructure as Codeリポジトリです。
 
 このリポジトリはpublicです。コード、設定、ドキュメント、Issue、Pull Requestなど、リポジトリ内のすべての情報は第三者から閲覧される前提で管理します。
 
@@ -23,7 +23,7 @@ AWS Organizations配下の共通基盤、監査、セキュリティ、CI/CD認�
 - GitHub ActionsとAWSのOIDC連携
 - GitHub Actions用のIAM role
 - 組織共通の監視および通知
-- 共通ドメイン(`gobo-cello.com`)のRoute 53 Hosted Zoneとサブドメイン委譲の管理
+- 共通ドメイン(`example.com`)のRoute 53 Hosted Zoneとサブドメイン委譲の管理
 
 実装されていない項目については、今後このリポジトリへ段階的に追加します。
 
