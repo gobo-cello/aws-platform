@@ -11,13 +11,14 @@ describe("DnsStack", () => {
 			account: parseAwsAccountId("111111111111"),
 			region: "ap-northeast-1",
 		},
+		apexDomainName: "example.com",
 	});
 	const template = Template.fromStack(stack);
 
 	it("apex hosted zoneを作成する", () => {
 		template.resourceCountIs("AWS::Route53::HostedZone", 1);
 		template.hasResourceProperties("AWS::Route53::HostedZone", {
-			Name: "gobo-cello.com.",
+			Name: "example.com.",
 		});
 	});
 
@@ -39,13 +40,14 @@ describe("DnsStack (blogSubdomainNameServers指定時)", () => {
 			account: parseAwsAccountId("111111111111"),
 			region: "ap-northeast-1",
 		},
+		apexDomainName: "example.com",
 		blogSubdomainNameServers: ["ns-1.awsdns-00.com", "ns-2.awsdns-00.org"],
 	});
 	const template = Template.fromStack(stack);
 
 	it("blog宛のNS delegationレコードを作成する", () => {
 		template.hasResourceProperties("AWS::Route53::RecordSet", {
-			Name: "blog.gobo-cello.com.",
+			Name: "blog.example.com.",
 			Type: "NS",
 			ResourceRecords: Match.arrayEquals([
 				"ns-1.awsdns-00.com",

@@ -1,5 +1,5 @@
 import { type AwsAccountId, parseAwsAccountId } from "./accounts";
-import { parseNameServers } from "./dns";
+import { parseApexDomainName, parseNameServers } from "./dns";
 import { type EmailAddress, parseEmailAddress } from "./email";
 import { type KmsKeyArn, parseKmsKeyArn } from "./kms";
 import {
@@ -34,6 +34,7 @@ export interface PlatformConfiguration {
 	readonly logArchive: AwsEnvironment;
 	readonly cloudTrailDestination: CloudTrailDestination;
 	readonly securityNotificationEmail: EmailAddress;
+	readonly apexDomainName: string;
 	readonly blogSubdomainNameServers?: readonly string[] | undefined;
 }
 
@@ -113,6 +114,9 @@ export function loadPlatformConfiguration(): PlatformConfiguration {
 		},
 		securityNotificationEmail: parseEmailAddress(
 			readRequiredEnvironmentVariable("SECURITY_NOTIFICATION_EMAIL"),
+		),
+		apexDomainName: parseApexDomainName(
+			readRequiredEnvironmentVariable("APEX_DOMAIN_NAME"),
 		),
 		blogSubdomainNameServers,
 	} satisfies PlatformConfiguration;

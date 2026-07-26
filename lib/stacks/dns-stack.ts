@@ -1,10 +1,10 @@
 import { CfnOutput, Fn, Stack, type StackProps } from "aws-cdk-lib";
 import { HostedZone, NsRecord } from "aws-cdk-lib/aws-route53";
 import type { Construct } from "constructs";
-import { apexDomainName } from "../config/dns";
 import { applyPlatformTags, createPlatformTags } from "../config/tags";
 
 export interface DnsStackProps extends StackProps {
+	readonly apexDomainName: string;
 	readonly blogSubdomainNameServers?: readonly string[] | undefined;
 }
 
@@ -16,9 +16,9 @@ export class DnsStack extends Stack {
 		});
 
 		const zone = new HostedZone(this, "ApexHostedZone", {
-			zoneName: apexDomainName,
+			zoneName: props.apexDomainName,
 			comment:
-				"gobo-cello.comのapex hosted zone。各サブドメインは各accountのhosted zoneへNS delegationする。",
+				"運用ドメインのapex hosted zone。各サブドメインは各accountのhosted zoneへNS delegationする。",
 		});
 
 		if (props.blogSubdomainNameServers !== undefined) {
