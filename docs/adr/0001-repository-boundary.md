@@ -10,10 +10,10 @@ failure domainが異なる。
 
 ## Decision
 
-organization-level infrastructureは`gobo-cello-aws-platform`で管理する。
+organization-level infrastructureは`gobo-cello/aws-platform`で管理する。
 
 blog applicationとそのworkload infrastructureは、別の
-`gobo-cello-blog`リポジトリで管理する。
+`gobo-cello/blog`リポジトリで管理する。
 
 ## Consequences
 
