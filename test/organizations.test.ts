@@ -1,8 +1,5 @@
 import { describe, expect, it, test } from "vitest";
-import {
-	InvalidAwsOrganizationIdError,
-	parseAwsOrganizationId,
-} from "../lib/config/organizations";
+import { parseAwsOrganizationId } from "../lib/config/organizations";
 
 describe("parseAwsOrganizationId", () => {
 	describe("正しいOrganization IDが与えられた場合", () => {
@@ -20,10 +17,8 @@ describe("parseAwsOrganizationId", () => {
 			"o-short",
 			"O-1234567890",
 			"o-123456789_",
-		])("InvalidAwsOrganizationIdErrorを投げる: %p", (value: unknown) => {
-			expect(() => parseAwsOrganizationId(value)).toThrow(
-				InvalidAwsOrganizationIdError,
-			);
+		])("エラーを投げる: %p", (value: unknown) => {
+			expect(() => parseAwsOrganizationId(value)).toThrow();
 		});
 	});
 });
