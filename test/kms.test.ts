@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from "vitest";
-import { InvalidKmsKeyArnError, parseKmsKeyArn } from "../lib/config/kms";
+import { parseKmsKeyArn } from "../lib/config/kms";
 
 describe("parseKmsKeyArn", () => {
 	describe("正しいKMS key ARNが与えられた場合", () => {
@@ -19,8 +19,8 @@ describe("parseKmsKeyArn", () => {
 			"",
 			"not-an-arn",
 			"arn:aws:kms:ap-northeast-1:222:key/test",
-		])("InvalidKmsKeyArnErrorを投げる: %p", (value: unknown) => {
-			expect(() => parseKmsKeyArn(value)).toThrow(InvalidKmsKeyArnError);
+		])("エラーを投げる: %p", (value: unknown) => {
+			expect(() => parseKmsKeyArn(value)).toThrow();
 		});
 	});
 });

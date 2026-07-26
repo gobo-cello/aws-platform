@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from "vitest";
-import { InvalidS3BucketNameError, parseS3BucketName } from "../lib/config/s3";
+import { parseS3BucketName } from "../lib/config/s3";
 
 describe("parseS3BucketName", () => {
 	describe("正しいS3 bucket名が与えられた場合", () => {
@@ -19,8 +19,8 @@ describe("parseS3BucketName", () => {
 			"-invalid",
 			"invalid-",
 			"invalid..bucket",
-		])("InvalidS3BucketNameErrorを投げる: %p", (value: unknown) => {
-			expect(() => parseS3BucketName(value)).toThrow(InvalidS3BucketNameError);
+		])("エラーを投げる: %p", (value: unknown) => {
+			expect(() => parseS3BucketName(value)).toThrow();
 		});
 	});
 });

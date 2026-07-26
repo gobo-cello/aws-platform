@@ -4,8 +4,7 @@ export type OrganizationalUnitId = string & {
 	readonly [organizationalUnitIdBrand]: "OrganizationalUnitId";
 };
 
-/** @internal テストの toThrow アサーションのためだけに export しており、production コードからは参照されない */
-export class InvalidOrganizationalUnitIdError extends Error {
+class InvalidOrganizationalUnitIdError extends Error {
 	public constructor(value: unknown) {
 		super(`Invalid organizational unit ID: ${String(value)}`);
 		this.name = "InvalidOrganizationalUnitIdError";

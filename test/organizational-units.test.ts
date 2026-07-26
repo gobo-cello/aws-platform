@@ -1,8 +1,5 @@
 import { describe, expect, it, test } from "vitest";
-import {
-	InvalidOrganizationalUnitIdError,
-	parseOrganizationalUnitId,
-} from "../lib/config/organizational-units";
+import { parseOrganizationalUnitId } from "../lib/config/organizational-units";
 
 describe("parseOrganizationalUnitId", () => {
 	describe("正しいOU IDが与えられた場合", () => {
@@ -22,10 +19,8 @@ describe("parseOrganizationalUnitId", () => {
 			"123456789012",
 			"ou-short",
 			"OU-ab12-12345678",
-		])("InvalidOrganizationalUnitIdErrorを投げる: %p", (value: unknown) => {
-			expect(() => parseOrganizationalUnitId(value)).toThrow(
-				InvalidOrganizationalUnitIdError,
-			);
+		])("エラーを投げる: %p", (value: unknown) => {
+			expect(() => parseOrganizationalUnitId(value)).toThrow();
 		});
 	});
 });

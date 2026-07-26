@@ -4,8 +4,7 @@ export type EmailAddress = string & {
 	readonly [emailAddressBrand]: "EmailAddress";
 };
 
-/** @internal テストの toThrow アサーションのためだけに export しており、production コードからは参照されない */
-export class InvalidEmailAddressError extends Error {
+class InvalidEmailAddressError extends Error {
 	public constructor(value: unknown) {
 		super(`Invalid email address: ${String(value)}`);
 		this.name = "InvalidEmailAddressError";
