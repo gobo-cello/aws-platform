@@ -41,7 +41,11 @@ class InvalidGoogleSiteVerificationTokenError extends Error {
 }
 
 export function parseGoogleSiteVerificationToken(value: unknown): string {
-	if (typeof value !== "string" || value.length === 0) {
+	if (
+		typeof value !== "string" ||
+		value.length === 0 ||
+		value.includes("google-site-verification=")
+	) {
 		throw new InvalidGoogleSiteVerificationTokenError(value);
 	}
 

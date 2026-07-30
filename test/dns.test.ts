@@ -39,4 +39,12 @@ describe("parseGoogleSiteVerificationToken", () => {
 	it("空文字列が与えられた場合エラーを投げる", () => {
 		expect(() => parseGoogleSiteVerificationToken("")).toThrow();
 	});
+
+	it("google-site-verification=を含む値が与えられた場合エラーを投げる", () => {
+		expect(() =>
+			parseGoogleSiteVerificationToken(
+				"google-site-verification=abcdefg1234567",
+			),
+		).toThrow();
+	});
 });
