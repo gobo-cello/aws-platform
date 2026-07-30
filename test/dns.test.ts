@@ -1,5 +1,8 @@
 import { describe, expect, it, test } from "vitest";
-import { parseNameServers } from "../lib/config/dns";
+import {
+	parseGoogleSiteVerificationToken,
+	parseNameServers,
+} from "../lib/config/dns";
 
 describe("parseNameServers", () => {
 	describe("カンマ区切りの文字列が与えられた場合", () => {
@@ -23,5 +26,17 @@ describe("parseNameServers", () => {
 				expect(() => parseNameServers(value)).toThrow();
 			},
 		);
+	});
+});
+
+describe("parseGoogleSiteVerificationToken", () => {
+	it("空でない文字列をそのまま返す", () => {
+		expect(parseGoogleSiteVerificationToken("abcdefg1234567")).toBe(
+			"abcdefg1234567",
+		);
+	});
+
+	it("空文字列が与えられた場合エラーを投げる", () => {
+		expect(() => parseGoogleSiteVerificationToken("")).toThrow();
 	});
 });

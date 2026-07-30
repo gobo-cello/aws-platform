@@ -54,4 +54,5 @@ new DnsStack(app, "DnsStack", {
 	env: configuration.management,
 	apexDomainName: configuration.apexDomainName,
 	blogSubdomainNameServers: configuration.blogSubdomainNameServers,
+	googleSiteVerificationToken: configuration.googleSiteVerificationToken,
 });
