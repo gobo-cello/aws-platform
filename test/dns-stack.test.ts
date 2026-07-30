@@ -56,3 +56,42 @@ describe("DnsStack (blogSubdomainNameServers指定時)", () => {
 		});
 	});
 });
+
+describe("DnsStack (googleSiteVerificationToken指定時)", () => {
+	const app = new App();
+	const stack = new DnsStack(app, "TestDnsStack", {
+		env: {
+			account: parseAwsAccountId("111111111111"),
+			region: "ap-northeast-1",
+		},
+		apexDomainName: "example.com",
+		googleSiteVerificationToken: "abcdefg1234567",
+	});
+	const template = Template.fromStack(stack);
+
+	it("apex宛にsite verification用のTXTレコードを作成する", () => {
+		template.hasResourceProperties("AWS::Route53::RecordSet", {
+			Name: "example.com.",
+			Type: "TXT",
+			ResourceRecords: Match.arrayEquals([
+				'"google-site-verification=abcdefg1234567"',
+			]),
+		});
+	});
+});
+
+describe("DnsStack (googleSiteVerificationToken未指定の場合)", () => {
+	const app = new App();
+	const stack = new DnsStack(app, "TestDnsStack", {
+		env: {
+			account: parseAwsAccountId("111111111111"),
+			region: "ap-northeast-1",
+		},
+		apexDomainName: "example.com",
+	});
+	const template = Template.fromStack(stack);
+
+	it("TXTレコードを作成しない", () => {
+		template.resourceCountIs("AWS::Route53::RecordSet", 0);
+	});
+});

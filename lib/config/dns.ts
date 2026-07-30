@@ -32,3 +32,18 @@ export function parseNameServers(value: string): readonly string[] {
 
 	return nameServers;
 }
+
+class InvalidGoogleSiteVerificationTokenError extends Error {
+	public constructor(value: unknown) {
+		super(`Invalid Google site verification token: ${String(value)}`);
+		this.name = "InvalidGoogleSiteVerificationTokenError";
+	}
+}
+
+export function parseGoogleSiteVerificationToken(value: unknown): string {
+	if (typeof value !== "string" || value.length === 0) {
+		throw new InvalidGoogleSiteVerificationTokenError(value);
+	}
+
+	return value;
+}

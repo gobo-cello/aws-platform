@@ -1,11 +1,12 @@
 import { CfnOutput, Fn, Stack, type StackProps } from "aws-cdk-lib";
-import { HostedZone, NsRecord } from "aws-cdk-lib/aws-route53";
+import { HostedZone, NsRecord, TxtRecord } from "aws-cdk-lib/aws-route53";
 import type { Construct } from "constructs";
 import { applyPlatformTags, createPlatformTags } from "../config/tags";
 
 export interface DnsStackProps extends StackProps {
 	readonly apexDomainName: string;
 	readonly blogSubdomainNameServers?: readonly string[] | undefined;
+	readonly googleSiteVerificationToken?: string | undefined;
 }
 
 export class DnsStack extends Stack {
@@ -26,6 +27,15 @@ export class DnsStack extends Stack {
 				zone,
 				recordName: "blog",
 				values: [...props.blogSubdomainNameServers],
+			});
+		}
+
+		if (props.googleSiteVerificationToken !== undefined) {
+			new TxtRecord(this, "GoogleSiteVerification", {
+				zone,
+				values: [
+					`google-site-verification=${props.googleSiteVerificationToken}`,
+				],
 			});
 		}
 

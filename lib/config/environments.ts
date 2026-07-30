@@ -1,5 +1,9 @@
 import { type AwsAccountId, parseAwsAccountId } from "./accounts";
-import { parseApexDomainName, parseNameServers } from "./dns";
+import {
+	parseApexDomainName,
+	parseGoogleSiteVerificationToken,
+	parseNameServers,
+} from "./dns";
 import { type EmailAddress, parseEmailAddress } from "./email";
 import { type KmsKeyArn, parseKmsKeyArn } from "./kms";
 import {
@@ -36,6 +40,7 @@ export interface PlatformConfiguration {
 	readonly securityNotificationEmail: EmailAddress;
 	readonly apexDomainName: string;
 	readonly blogSubdomainNameServers?: readonly string[] | undefined;
+	readonly googleSiteVerificationToken?: string | undefined;
 }
 
 interface CloudTrailDestination {
@@ -76,6 +81,14 @@ export function loadPlatformConfiguration(): PlatformConfiguration {
 		blogSubdomainNameServersValue === undefined
 			? undefined
 			: parseNameServers(blogSubdomainNameServersValue);
+
+	const googleSiteVerificationTokenValue = readOptionalEnvironmentVariable(
+		"GOOGLE_SITE_VERIFICATION_TOKEN",
+	);
+	const googleSiteVerificationToken =
+		googleSiteVerificationTokenValue === undefined
+			? undefined
+			: parseGoogleSiteVerificationToken(googleSiteVerificationTokenValue);
 
 	return {
 		organizationId: parseAwsOrganizationId(
@@ -119,5 +132,6 @@ export function loadPlatformConfiguration(): PlatformConfiguration {
 			readRequiredEnvironmentVariable("APEX_DOMAIN_NAME"),
 		),
 		blogSubdomainNameServers,
+		googleSiteVerificationToken,
 	} satisfies PlatformConfiguration;
 }
