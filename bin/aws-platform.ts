@@ -4,6 +4,7 @@ import { App } from "aws-cdk-lib";
 import { loadPlatformConfiguration } from "../lib/config/environments";
 import { AccessAnalyzerStack } from "../lib/stacks/access-analyzer-stack";
 import { DnsStack } from "../lib/stacks/dns-stack";
+import { GithubDeployRoleStack } from "../lib/stacks/github-deploy-role-stack";
 import { LogArchiveStack } from "../lib/stacks/log-archive-stack";
 import { OrganizationPoliciesStack } from "../lib/stacks/organization-policies-stack";
 import { OrganizationTrailStack } from "../lib/stacks/organization-trail-stack";
@@ -11,6 +12,18 @@ import { SecurityMonitoringStack } from "../lib/stacks/security-monitoring-stack
 
 const app = new App();
 const configuration = loadPlatformConfiguration();
+
+new GithubDeployRoleStack(app, "ManagementGithubDeployRoleStack", {
+	env: configuration.management,
+	awsEnvironment: configuration.management,
+	deploymentEnvironment: "management",
+});
+
+new GithubDeployRoleStack(app, "LogArchiveGithubDeployRoleStack", {
+	env: configuration.logArchive,
+	awsEnvironment: configuration.logArchive,
+	deploymentEnvironment: "log-archive",
+});
 
 new LogArchiveStack(app, "LogArchiveStack", {
 	env: configuration.logArchive,

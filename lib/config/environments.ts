@@ -25,6 +25,11 @@ export interface AwsEnvironment {
 	readonly region: AwsRegion;
 }
 
+const platformDeployEnvironments = ["management", "log-archive"] as const;
+
+export type PlatformDeployEnvironment =
+	(typeof platformDeployEnvironments)[number];
+
 interface OrganizationalUnits {
 	readonly security: OrganizationalUnitId;
 	readonly production: OrganizationalUnitId;

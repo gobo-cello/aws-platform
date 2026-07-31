@@ -209,3 +209,23 @@ apex hosted zone自体は各サービス用のレコードを直接持たず、
 現時点ではDNSSECを設定しない。鍵管理・KSKローテーションなど
 運用負荷が増える一方、現状のリスクは小さいため、必要になった時点で
 改めて設定を検討する。
+
+## GitHub Actions Deploy Role
+
+GitHub ActionsからAWSへの認証は、account単位のOIDC Provider + Deploy Roleで行う。
+
+`management` accountには`ManagementGithubDeployRoleStack`、`log-archive`
+accountには`LogArchiveGithubDeployRoleStack`をそれぞれ配置し、
+GitHub Actions用のOIDC Providerと、CDK bootstrapの
+`deploy-role`・`file-publishing-role`・`lookup-role`への
+`sts:AssumeRole`のみを許可するRoleを作成する。
+
+Deploy Role自体には実際のリソース作成権限を持たせない。
+CloudFormationの実行はCDK bootstrapの`cfn-exec-role`が担うため、
+Deploy Roleの権限はbootstrap roleへのAssumeRoleに限定できる。
+
+trust policyのsub claimは、GitHub Actionsの`environment`名
+(`management`・`log-archive`)で絞り込む。`management` accountは
+Organizations・SCP・IAM Access Analyzerなど組織全体に影響するため、
+対応するGitHub Environmentにrequired reviewersを設定し、
+デプロイ前に人による承認を必須にする。
