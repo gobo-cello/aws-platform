@@ -13,12 +13,12 @@
 		"prepare": "lefthook install"
 	},
 	"dependencies": {
-		"aws-cdk-lib": "^2.262.0",
+		"aws-cdk-lib": "^2.262.1",
 		"constructs": "^10.7.1"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.5",
-		"@types/node": "^26.1.1",
+		"@types/node": "^26.1.2",
 		"aws-cdk": "2.1133.0",
 		"knip": "^6.29.0",
 		"lefthook": "^2.1.10",
