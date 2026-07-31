@@ -241,6 +241,27 @@ sso_registration_scopes = sso:account:access
 
 `aws sso login --profile <profile名>` でログインしてから、各`--profile`オプションでコマンドを実行します。
 
+## デプロイ
+
+このリポジトリは、GitHub Actions(`.github/workflows/deploy.yml`)による自動デプロイを使用します。手動での`cdk deploy`は行いません。
+
+`main`へのマージにより、`log-archive` account、続けて`management` account の順にデプロイします。`management` accountはOrganizations・SCP・IAM Access Analyzerなど組織全体に影響するため、GitHub Environmentの protection rule でデプロイ前に人による承認を必須にしています。
+
+### GitHub ActionsとAWSの認証
+
+GitHub ActionsからAWSへの認証にはOIDCを使用します。各accountに配置した`GithubDeployRoleStack`(`ManagementGithubDeployRoleStack`・`LogArchiveGithubDeployRoleStack`)が、GitHub Actions用のOIDC ProviderとDeploy Roleを作成します。
+
+Deploy Roleは、CDK bootstrapが作成する`deploy-role`・`file-publishing-role`・`lookup-role`への`sts:AssumeRole`のみを許可します。実際のリソース作成は、これらのbootstrap roleおよびCloudFormation実行roleが担います。
+
+### 初回セットアップ
+
+自動デプロイが機能するためには、次の手順を一度だけ手動で行う必要があります。
+
+1. 各accountで`cdk bootstrap`が実行済みであることを確認する
+2. ローカルから`ManagementGithubDeployRoleStack`・`LogArchiveGithubDeployRoleStack`を手動で`cdk deploy`し、出力された`GithubDeployRoleArn`を控える
+3. GitHubリポジトリに`management`・`log-archive`のEnvironmentを作成し、控えたRole ARNをそれぞれのEnvironment Variables(`AWS_MANAGEMENT_DEPLOY_ROLE_ARN`・`AWS_LOG_ARCHIVE_DEPLOY_ROLE_ARN`)として登録する
+4. `management` Environmentにrequired reviewersを設定する
+
 ## Git運用
 
 `main` branchは常にbuild、test、CDK synthが成功する状態を維持します。
