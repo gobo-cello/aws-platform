@@ -204,6 +204,23 @@ apex hosted zone自体は各サービス用のレコードを直接持たず、
 この環境変数は未設定でよく、`DnsStack`はNS delegationレコードを
 作成しない。
 
+### apex landing page(例外的にapex zoneへ直接レコードを持つケース)
+
+`landing`リポジトリはapexドメイン自体にコンテンツを配信するため、
+サブドメインへのNS delegationという通常のパターンが使えない
+(delegationはzoneそのものを渡すことになり、apexでは成立しない)。
+このため、`landing`はhosted zoneを一切所有せず、代わりに
+`APEX_LANDING_CLOUDFRONT_DOMAIN_NAME`・
+`APEX_LANDING_CERT_VALIDATION_RECORD_NAME`・
+`APEX_LANDING_CERT_VALIDATION_RECORD_VALUE`の3つの環境変数を
+`BLOG_SUBDOMAIN_NAME_SERVERS`と同様の手動値連携で受け取り、
+`DnsStack`がapex zone内にCloudFront向けA/AAAA aliasレコードと
+ACM証明書検証用CNAMEレコードを直接作成する。
+
+これは「apex hosted zoneは各サービス用のレコードを直接持たない」
+という上記原則の明示的な例外であり、詳細な理由・却下した代替案は
+[ADR 0006](adr/0006-apex-landing-page-exception.md)を参照。
+
 ### DNSSEC
 
 現時点ではDNSSECを設定しない。鍵管理・KSKローテーションなど

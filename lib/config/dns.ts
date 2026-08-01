@@ -51,3 +51,48 @@ export function parseGoogleSiteVerificationToken(value: unknown): string {
 
 	return value;
 }
+
+class InvalidCloudFrontDomainNameError extends Error {
+	public constructor(value: unknown) {
+		super(`Invalid CloudFront domain name: ${String(value)}`);
+		this.name = "InvalidCloudFrontDomainNameError";
+	}
+}
+
+export function parseCloudFrontDomainName(value: unknown): string {
+	if (typeof value !== "string" || value.length === 0) {
+		throw new InvalidCloudFrontDomainNameError(value);
+	}
+
+	return value;
+}
+
+class InvalidCertificateValidationRecordNameError extends Error {
+	public constructor(value: unknown) {
+		super(`Invalid certificate validation record name: ${String(value)}`);
+		this.name = "InvalidCertificateValidationRecordNameError";
+	}
+}
+
+export function parseCertificateValidationRecordName(value: unknown): string {
+	if (typeof value !== "string" || value.length === 0) {
+		throw new InvalidCertificateValidationRecordNameError(value);
+	}
+
+	return value;
+}
+
+class InvalidCertificateValidationRecordValueError extends Error {
+	public constructor(value: unknown) {
+		super(`Invalid certificate validation record value: ${String(value)}`);
+		this.name = "InvalidCertificateValidationRecordValueError";
+	}
+}
+
+export function parseCertificateValidationRecordValue(value: unknown): string {
+	if (typeof value !== "string" || value.length === 0) {
+		throw new InvalidCertificateValidationRecordValueError(value);
+	}
+
+	return value;
+}

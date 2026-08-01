@@ -68,4 +68,10 @@ new DnsStack(app, "DnsStack", {
 	apexDomainName: configuration.apexDomainName,
 	blogSubdomainNameServers: configuration.blogSubdomainNameServers,
 	googleSiteVerificationToken: configuration.googleSiteVerificationToken,
+	apexLandingCloudFrontDomainName:
+		configuration.apexLandingCloudFrontDomainName,
+	apexLandingCertificateValidationRecordName:
+		configuration.apexLandingCertificateValidationRecordName,
+	apexLandingCertificateValidationRecordValue:
+		configuration.apexLandingCertificateValidationRecordValue,
 });

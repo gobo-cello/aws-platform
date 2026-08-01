@@ -1,6 +1,9 @@
 import { type AwsAccountId, parseAwsAccountId } from "./accounts";
 import {
 	parseApexDomainName,
+	parseCertificateValidationRecordName,
+	parseCertificateValidationRecordValue,
+	parseCloudFrontDomainName,
 	parseGoogleSiteVerificationToken,
 	parseNameServers,
 } from "./dns";
@@ -46,6 +49,9 @@ export interface PlatformConfiguration {
 	readonly apexDomainName: string;
 	readonly blogSubdomainNameServers?: readonly string[] | undefined;
 	readonly googleSiteVerificationToken?: string | undefined;
+	readonly apexLandingCloudFrontDomainName?: string | undefined;
+	readonly apexLandingCertificateValidationRecordName?: string | undefined;
+	readonly apexLandingCertificateValidationRecordValue?: string | undefined;
 }
 
 interface CloudTrailDestination {
@@ -95,6 +101,34 @@ export function loadPlatformConfiguration(): PlatformConfiguration {
 			? undefined
 			: parseGoogleSiteVerificationToken(googleSiteVerificationTokenValue);
 
+	const apexLandingCloudFrontDomainNameValue = readOptionalEnvironmentVariable(
+		"APEX_LANDING_CLOUDFRONT_DOMAIN_NAME",
+	);
+	const apexLandingCloudFrontDomainName =
+		apexLandingCloudFrontDomainNameValue === undefined
+			? undefined
+			: parseCloudFrontDomainName(apexLandingCloudFrontDomainNameValue);
+
+	const apexLandingCertificateValidationRecordNameValue =
+		readOptionalEnvironmentVariable("APEX_LANDING_CERT_VALIDATION_RECORD_NAME");
+	const apexLandingCertificateValidationRecordName =
+		apexLandingCertificateValidationRecordNameValue === undefined
+			? undefined
+			: parseCertificateValidationRecordName(
+					apexLandingCertificateValidationRecordNameValue,
+				);
+
+	const apexLandingCertificateValidationRecordValueValue =
+		readOptionalEnvironmentVariable(
+			"APEX_LANDING_CERT_VALIDATION_RECORD_VALUE",
+		);
+	const apexLandingCertificateValidationRecordValue =
+		apexLandingCertificateValidationRecordValueValue === undefined
+			? undefined
+			: parseCertificateValidationRecordValue(
+					apexLandingCertificateValidationRecordValueValue,
+				);
+
 	return {
 		organizationId: parseAwsOrganizationId(
 			readRequiredEnvironmentVariable("AWS_ORGANIZATION_ID"),
@@ -138,5 +172,8 @@ export function loadPlatformConfiguration(): PlatformConfiguration {
 		),
 		blogSubdomainNameServers,
 		googleSiteVerificationToken,
+		apexLandingCloudFrontDomainName,
+		apexLandingCertificateValidationRecordName,
+		apexLandingCertificateValidationRecordValue,
 	} satisfies PlatformConfiguration;
 }
