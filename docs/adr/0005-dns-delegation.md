@@ -1,6 +1,6 @@
 # 0005: example.comのapex hosted zoneとサブドメイン委譲
 
-- Status: Accepted
+- Status: Accepted(一部[0006](0006-apex-landing-page-exception.md)により上書き)
 - Date: 2026-07-22
 
 ## Context
@@ -29,7 +29,9 @@ example.com (apex hosted zone、Management account)
 
 apex hosted zone自体は、サブドメインのNS delegationレコード以外の
 レコードを持たない。ドメインの実体・証明書・DNS検証は、
-委譲先のサービスaccountが完全に自己完結して管理する。
+委譲先のサービスaccountが完全に自己完結して管理する
+(apex自体にコンテンツを配信する`landing`リポジトリのための例外は
+[0006](0006-apex-landing-page-exception.md)を参照)。
 
 これにより、将来別のサブドメインが増えても、apex側の変更は
 NS delegationレコードの追加だけで済み、各サービスのaccountは
