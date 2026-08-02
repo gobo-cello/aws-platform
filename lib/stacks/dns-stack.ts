@@ -19,6 +19,7 @@ import { applyPlatformTags, createPlatformTags } from "../config/tags";
 export interface DnsStackProps extends StackProps {
 	readonly apexDomainName: string;
 	readonly blogSubdomainNameServers?: readonly string[] | undefined;
+	readonly suiteShuffleSubdomainNameServers?: readonly string[] | undefined;
 	readonly googleSiteVerificationToken?: string | undefined;
 	readonly apexLandingCloudFrontDomainName?: string | undefined;
 	readonly apexLandingCertificateValidationRecordName?: string | undefined;
@@ -66,6 +67,14 @@ export class DnsStack extends Stack {
 				zone,
 				recordName: "blog",
 				values: [...props.blogSubdomainNameServers],
+			});
+		}
+
+		if (props.suiteShuffleSubdomainNameServers !== undefined) {
+			new NsRecord(this, "SuiteShuffleSubdomainDelegation", {
+				zone,
+				recordName: "suite-shuffle",
+				values: [...props.suiteShuffleSubdomainNameServers],
 			});
 		}
 

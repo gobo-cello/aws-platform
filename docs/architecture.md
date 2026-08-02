@@ -8,9 +8,11 @@ AWS Organizations
 ├── Security OU
 │   └── log-archive
 ├── Production OU
-│   └── blog-production
+│   ├── blog-production
+│   └── suite-shuffle-production
 └── Sandbox OU
-    └── blog-sandbox
+    ├── blog-sandbox
+    └── suite-shuffle-sandbox
 ```
 
 ## 責務
@@ -37,11 +39,19 @@ AWS Organizations
 
 * 開発・検証用のワークロード
 
+### suite-shuffle-production
+
+* 本番Suite Shuffleのワークロード
+
+### suite-shuffle-sandbox
+
+* 開発・検証用のワークロード
+
 ## リポジトリの境界
 
 このリポジトリは、組織レベルのプラットフォーム基盤を管理します。
 
-ブログのアプリケーション、コンテンツ、ワークロード用インフラストラクチャは、別のリポジトリで管理します。
+ブログ・Suite Shuffleのアプリケーション、コンテンツ、ワークロード用インフラストラクチャは、それぞれ別のリポジトリで管理します。
 
 ## CDK naming policy
 
@@ -185,7 +195,8 @@ repositoryには保存しない。
 
 ```text
 example.com (apex hosted zone、aws-platform管理)
-  └─ NS delegation → blog.example.com (blog-production accountが所有するhosted zone)
+  ├─ NS delegation → blog.example.com (blog-production accountが所有するhosted zone)
+  └─ NS delegation → suite-shuffle.example.com (suite-shuffle-production accountが所有するhosted zone)
 ```
 
 apex hosted zone自体は各サービス用のレコードを直接持たず、
@@ -203,6 +214,10 @@ apex hosted zone自体は各サービス用のレコードを直接持たず、
 分離するための値)。`blog`側のhosted zoneがまだ存在しない間は
 この環境変数は未設定でよく、`DnsStack`はNS delegationレコードを
 作成しない。
+
+`suite-shuffle.example.com`も同様に、`suite-shuffle`リポジトリの
+CDKで作成したhosted zoneのname serverを`SUITE_SHUFFLE_SUBDOMAIN_NAME_SERVERS`
+環境変数経由で受け取る。
 
 ### apex landing page(例外的にapex zoneへ直接レコードを持つケース)
 

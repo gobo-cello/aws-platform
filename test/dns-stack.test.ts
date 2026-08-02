@@ -57,6 +57,33 @@ describe("DnsStack (blogSubdomainNameServers指定時)", () => {
 	});
 });
 
+describe("DnsStack (suiteShuffleSubdomainNameServers指定時)", () => {
+	const app = new App();
+	const stack = new DnsStack(app, "TestDnsStack", {
+		env: {
+			account: parseAwsAccountId("111111111111"),
+			region: "ap-northeast-1",
+		},
+		apexDomainName: "example.com",
+		suiteShuffleSubdomainNameServers: [
+			"ns-1.awsdns-00.com",
+			"ns-2.awsdns-00.org",
+		],
+	});
+	const template = Template.fromStack(stack);
+
+	it("suite-shuffle宛のNS delegationレコードを作成する", () => {
+		template.hasResourceProperties("AWS::Route53::RecordSet", {
+			Name: "suite-shuffle.example.com.",
+			Type: "NS",
+			ResourceRecords: Match.arrayEquals([
+				"ns-1.awsdns-00.com",
+				"ns-2.awsdns-00.org",
+			]),
+		});
+	});
+});
+
 describe("DnsStack (googleSiteVerificationToken指定時)", () => {
 	const app = new App();
 	const stack = new DnsStack(app, "TestDnsStack", {

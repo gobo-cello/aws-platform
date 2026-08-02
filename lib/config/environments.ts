@@ -48,6 +48,7 @@ export interface PlatformConfiguration {
 	readonly securityNotificationEmail: EmailAddress;
 	readonly apexDomainName: string;
 	readonly blogSubdomainNameServers?: readonly string[] | undefined;
+	readonly suiteShuffleSubdomainNameServers?: readonly string[] | undefined;
 	readonly googleSiteVerificationToken?: string | undefined;
 	readonly apexLandingCloudFrontDomainName?: string | undefined;
 	readonly apexLandingCertificateValidationRecordName?: string | undefined;
@@ -92,6 +93,14 @@ export function loadPlatformConfiguration(): PlatformConfiguration {
 		blogSubdomainNameServersValue === undefined
 			? undefined
 			: parseNameServers(blogSubdomainNameServersValue);
+
+	const suiteShuffleSubdomainNameServersValue = readOptionalEnvironmentVariable(
+		"SUITE_SHUFFLE_SUBDOMAIN_NAME_SERVERS",
+	);
+	const suiteShuffleSubdomainNameServers =
+		suiteShuffleSubdomainNameServersValue === undefined
+			? undefined
+			: parseNameServers(suiteShuffleSubdomainNameServersValue);
 
 	const googleSiteVerificationTokenValue = readOptionalEnvironmentVariable(
 		"GOOGLE_SITE_VERIFICATION_TOKEN",
@@ -171,6 +180,7 @@ export function loadPlatformConfiguration(): PlatformConfiguration {
 			readRequiredEnvironmentVariable("APEX_DOMAIN_NAME"),
 		),
 		blogSubdomainNameServers,
+		suiteShuffleSubdomainNameServers,
 		googleSiteVerificationToken,
 		apexLandingCloudFrontDomainName,
 		apexLandingCertificateValidationRecordName,
