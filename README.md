@@ -52,6 +52,8 @@ AWS Organizations配下の共通基盤、監査、セキュリティ、CI/CD認�
 - `log-archive`
 - `blog-production`
 - `blog-sandbox`
+- `suite-shuffle-production`
+- `suite-shuffle-sandbox`
 
 概念上の構成は次のとおりです。
 
@@ -61,9 +63,11 @@ AWS Organizations
 ├── Security OU
 │   └── log-archive
 ├── Production OU
-│   └── blog-production
+│   ├── blog-production
+│   └── suite-shuffle-production
 └── Sandbox OU
-    └── blog-sandbox
+    ├── blog-sandbox
+    └── suite-shuffle-sandbox
 ```
 
 実際のAWS account ID、Organization ID、メールアドレスなど、公開する必要のない環境固有情報はリポジトリへ保存しません。

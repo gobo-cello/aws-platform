@@ -67,6 +67,8 @@ new DnsStack(app, "DnsStack", {
 	env: configuration.management,
 	apexDomainName: configuration.apexDomainName,
 	blogSubdomainNameServers: configuration.blogSubdomainNameServers,
+	suiteShuffleSubdomainNameServers:
+		configuration.suiteShuffleSubdomainNameServers,
 	googleSiteVerificationToken: configuration.googleSiteVerificationToken,
 	apexLandingCloudFrontDomainName:
 		configuration.apexLandingCloudFrontDomainName,
