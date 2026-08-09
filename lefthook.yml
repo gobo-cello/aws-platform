@@ -1,3 +1,5 @@
+glob_matcher: doublestar
+
 pre-commit:
   parallel: true
   commands:
@@ -19,6 +21,9 @@ pre-push:
       run: npm run knip
     knip-production:
       run: npm run knip:production
+    actionlint:
+      glob: ".github/{actions,workflows}/**/*.{yml,yaml}"
+      run: ./scripts/actionlint.sh -color
 
 commit-msg:
   commands:
