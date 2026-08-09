@@ -7,17 +7,6 @@ import {
 	parseGoogleSiteVerificationToken,
 	parseNameServers,
 } from "./dns";
-import { type EmailAddress, parseEmailAddress } from "./email";
-import { type KmsKeyArn, parseKmsKeyArn } from "./kms";
-import {
-	type OrganizationalUnitId,
-	parseOrganizationalUnitId,
-} from "./organizational-units";
-import {
-	type AwsOrganizationId,
-	parseAwsOrganizationId,
-} from "./organizations";
-import { parseS3BucketName, type S3BucketName } from "./s3";
 
 const supportedAwsRegions = ["ap-northeast-1"] as const;
 
@@ -28,24 +17,13 @@ export interface AwsEnvironment {
 	readonly region: AwsRegion;
 }
 
-const platformDeployEnvironments = ["management", "log-archive"] as const;
+const platformDeployEnvironments = ["management"] as const;
 
 export type PlatformDeployEnvironment =
 	(typeof platformDeployEnvironments)[number];
 
-interface OrganizationalUnits {
-	readonly security: OrganizationalUnitId;
-	readonly production: OrganizationalUnitId;
-	readonly sandbox: OrganizationalUnitId;
-}
-
 export interface PlatformConfiguration {
-	readonly organizationId: AwsOrganizationId;
-	readonly organizationalUnits: OrganizationalUnits;
 	readonly management: AwsEnvironment;
-	readonly logArchive: AwsEnvironment;
-	readonly cloudTrailDestination: CloudTrailDestination;
-	readonly securityNotificationEmail: EmailAddress;
 	readonly apexDomainName: string;
 	readonly blogSubdomainNameServers?: readonly string[] | undefined;
 	readonly suiteShuffleSubdomainNameServers?: readonly string[] | undefined;
@@ -53,11 +31,6 @@ export interface PlatformConfiguration {
 	readonly apexLandingCloudFrontDomainName?: string | undefined;
 	readonly apexLandingCertificateValidationRecordName?: string | undefined;
 	readonly apexLandingCertificateValidationRecordValue?: string | undefined;
-}
-
-interface CloudTrailDestination {
-	readonly bucketName: S3BucketName;
-	readonly kmsKeyArn: KmsKeyArn;
 }
 
 class MissingEnvironmentVariableError extends Error {
@@ -139,43 +112,12 @@ export function loadPlatformConfiguration(): PlatformConfiguration {
 				);
 
 	return {
-		organizationId: parseAwsOrganizationId(
-			readRequiredEnvironmentVariable("AWS_ORGANIZATION_ID"),
-		),
-		organizationalUnits: {
-			security: parseOrganizationalUnitId(
-				readRequiredEnvironmentVariable("AWS_SECURITY_OU_ID"),
-			),
-			production: parseOrganizationalUnitId(
-				readRequiredEnvironmentVariable("AWS_PRODUCTION_OU_ID"),
-			),
-			sandbox: parseOrganizationalUnitId(
-				readRequiredEnvironmentVariable("AWS_SANDBOX_OU_ID"),
-			),
-		},
 		management: {
 			account: parseAwsAccountId(
 				readRequiredEnvironmentVariable("AWS_MANAGEMENT_ACCOUNT_ID"),
 			),
 			region,
 		},
-		logArchive: {
-			account: parseAwsAccountId(
-				readRequiredEnvironmentVariable("AWS_LOG_ARCHIVE_ACCOUNT_ID"),
-			),
-			region,
-		},
-		cloudTrailDestination: {
-			bucketName: parseS3BucketName(
-				readRequiredEnvironmentVariable("AWS_CLOUDTRAIL_LOG_BUCKET_NAME"),
-			),
-			kmsKeyArn: parseKmsKeyArn(
-				readRequiredEnvironmentVariable("AWS_CLOUDTRAIL_KMS_KEY_ARN"),
-			),
-		},
-		securityNotificationEmail: parseEmailAddress(
-			readRequiredEnvironmentVariable("SECURITY_NOTIFICATION_EMAIL"),
-		),
 		apexDomainName: parseApexDomainName(
 			readRequiredEnvironmentVariable("APEX_DOMAIN_NAME"),
 		),

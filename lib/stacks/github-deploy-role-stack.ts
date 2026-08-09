@@ -37,7 +37,6 @@ const tagEnvironmentOf: Record<
 	DeploymentEnvironment
 > = {
 	management: "management",
-	"log-archive": "security",
 };
 
 export class GithubDeployRoleStack extends Stack {

@@ -2,13 +2,8 @@
 
 import { App } from "aws-cdk-lib";
 import { loadPlatformConfiguration } from "../lib/config/environments";
-import { AccessAnalyzerStack } from "../lib/stacks/access-analyzer-stack";
 import { DnsStack } from "../lib/stacks/dns-stack";
 import { GithubDeployRoleStack } from "../lib/stacks/github-deploy-role-stack";
-import { LogArchiveStack } from "../lib/stacks/log-archive-stack";
-import { OrganizationPoliciesStack } from "../lib/stacks/organization-policies-stack";
-import { OrganizationTrailStack } from "../lib/stacks/organization-trail-stack";
-import { SecurityMonitoringStack } from "../lib/stacks/security-monitoring-stack";
 
 const app = new App();
 const configuration = loadPlatformConfiguration();
@@ -17,50 +12,6 @@ new GithubDeployRoleStack(app, "ManagementGithubDeployRoleStack", {
 	env: configuration.management,
 	awsEnvironment: configuration.management,
 	deploymentEnvironment: "management",
-});
-
-new GithubDeployRoleStack(app, "LogArchiveGithubDeployRoleStack", {
-	env: configuration.logArchive,
-	awsEnvironment: configuration.logArchive,
-	deploymentEnvironment: "log-archive",
-});
-
-new LogArchiveStack(app, "LogArchiveStack", {
-	env: configuration.logArchive,
-	managementAccountId: configuration.management.account,
-	organizationId: configuration.organizationId,
-});
-
-const organizationTrailStack = new OrganizationTrailStack(
-	app,
-	"OrganizationTrailStack",
-	{
-		env: configuration.management,
-		organizationId: configuration.organizationId,
-		logBucketName: configuration.cloudTrailDestination.bucketName,
-		kmsKeyArn: configuration.cloudTrailDestination.kmsKeyArn,
-	},
-);
-
-new AccessAnalyzerStack(app, "AccessAnalyzerStack", {
-	env: configuration.management,
-});
-
-new OrganizationPoliciesStack(app, "OrganizationPoliciesStack", {
-	env: configuration.management,
-	logArchiveEnvironment: configuration.logArchive,
-	cloudTrailLogBucketName: configuration.cloudTrailDestination.bucketName,
-	cloudTrailKmsKeyArn: configuration.cloudTrailDestination.kmsKeyArn,
-	securityOuId: configuration.organizationalUnits.security,
-	productionOuId: configuration.organizationalUnits.production,
-	sandboxOuId: configuration.organizationalUnits.sandbox,
-});
-
-new SecurityMonitoringStack(app, "SecurityMonitoringStack", {
-	env: configuration.management,
-	cloudTrailLogGroup: organizationTrailStack.cloudTrailLogGroup,
-	logArchiveAccountId: configuration.logArchive.account,
-	notificationEmail: configuration.securityNotificationEmail,
 });
 
 new DnsStack(app, "DnsStack", {
