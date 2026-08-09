@@ -18,13 +18,6 @@ function createCdkBootstrapRoleArn(
 		`cdk-${cdkBootstrapQualifier}-${roleName}-${accountId}-${region}`) as IamRoleArn;
 }
 
-export function createCdkCloudFormationExecutionRoleArn(
-	accountId: AwsAccountId,
-	region: AwsRegion,
-): IamRoleArn {
-	return createCdkBootstrapRoleArn("cfn-exec-role", accountId, region);
-}
-
 export function createCdkDeployRoleArn(
 	accountId: AwsAccountId,
 	region: AwsRegion,

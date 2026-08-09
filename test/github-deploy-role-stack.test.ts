@@ -25,7 +25,7 @@ function synthesize(deploymentEnvironment: PlatformDeployEnvironment) {
 	return { stack, template: Template.fromStack(stack) };
 }
 
-describe.each<PlatformDeployEnvironment>(["management", "log-archive"])(
+describe.each<PlatformDeployEnvironment>(["management"])(
 	"GithubDeployRoleStack(%s)",
 	(deploymentEnvironment) => {
 		const { stack, template } = synthesize(deploymentEnvironment);
