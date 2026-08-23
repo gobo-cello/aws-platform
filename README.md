@@ -127,8 +127,7 @@ aws-platform/
 │   ├── architecture.md
 │   └── adr/
 │       └── 0001-repository-boundary.md
-├── .github/
-│   └── copilot-instructions.md
+├── CLAUDE.md
 ├── .env.example
 ├── .gitignore
 ├── SECURITY.md
