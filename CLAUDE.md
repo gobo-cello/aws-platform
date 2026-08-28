@@ -252,8 +252,8 @@ Biome の設定は、CLI・エディター・CI が同じ品質基準を共有�
 ### 対象バージョンと構成
 
 - Biome v2 を使う。`@biomejs/biome` は `package.json` の `devDependencies` で固定し、設定 schema と CLI の version を揃える。`latest` に依存して診断や整形結果を変動させない。gobo-cello の他リポジトリ(`aws-platform` / `blog` / `landing` / `suite-shuffle`)と version を揃え、片方だけ先行して結果が変わることを避ける。
-- このリポジトリには `biome.json` を置いておらず、Biome のデフォルト設定と推奨ルールだけで動作している。`biome.json` を新設する場合は、`$schema` と対象 version を固定し、`vcs` 連携を有効にしたうえで、解決する問題・対象範囲・採用しない場合の影響を説明できる項目だけを追加する。他の gobo-cello リポジトリの `biome.json` を、値の妥当性を確認せずそのまま持ち込まない。
-- 現在は `biome.json` が無く、Biome の推奨ルールとデフォルト整形にそのまま従っている。これは「デフォルトから始める」方針と整合した意図的な状態であり、目的を説明できない設定を追加するために `biome.json` を作らない。
+- 設定はリポジトリ直下の `biome.json` 一つで、`bin/`・`lib/`・`scripts/`・`test/` を含むリポジトリ全体をカバーする。nested configuration(`extends: "//"` を含む)は置かない。現在の `biome.json` は `$schema` と対象 version の固定、`vcs` 連携、および `linter`(下記)を持つ。他の gobo-cello リポジトリの `biome.json` を値の妥当性を確認せず持ち込まず、CSS / HTML など対象ファイルの無い設定(`css.parser`・HTML `overrides` など)は追加しない。
+- 現在の `biome.json` は、Linter に `linter.domains.project`(module graph 解析)と `suspicious/noImportCycles`(`error`)だけを追加し、それ以外は Biome の推奨ルールとデフォルト整形に従っている。循環 import は初期化順序の不具合や refactoring 時の障害という実害があり、TypeScript / Knip / Vitest / actionlint のいずれでも検出できないため、目的と対象が明確な個別ルールとして採用する(`project` ドメインは recommended の `noPrivateImports` も持ち込むが、現状のコードに違反はなくモジュール境界のガードとして働く)。Formatter / Assist のルール上書きは持たず、目的を説明できないルール追加や formatter オプション追加をしない。
 
 ### Formatter / Linter / Assist を分ける
 
@@ -278,7 +278,7 @@ Biome の設定は、CLI・エディター・CI が同じ品質基準を共有�
 ### 対象ファイルと除外
 
 - `files.includes` は Formatter / Linter / Assist 共通の入口で、各ツールの `includes` がその集合をさらに狭める。ツール側だけで対象を絞れると考えず、最終的な交差範囲を確認する。
-- `biome.json` が無いため `.gitignore` は自動では尊重されない。`biome.json` を作る場合は `vcs.enabled` と `vcs.useIgnoreFile` を有効にし、必要なら `files.includes` の否定パターンで明示して、`cdk.out/` などの生成物は解析対象に含めない。ただし、除外で診断数が減ったことだけを成功とみなさず、実行時に必要なファイルまで除外していないか確認する。
+- `vcs.enabled` と `vcs.useIgnoreFile` を有効にして `.gitignore` を尊重し、`cdk.out/` などの生成物は解析対象に含めない。さらに絞る必要があれば `files.includes` の否定パターンで明示する。ただし、除外で診断数が減ったことだけを成功とみなさず、実行時に必要なファイルまで除外していないか確認する。
 - glob とパスは `biome.json` を基準に解決される。`*` と `**` の違い、否定パターンの順序、ディレクトリを対象にする記法を、シェルの glob と混同しない。
 
 ### overrides と suppression は狭く保つ
