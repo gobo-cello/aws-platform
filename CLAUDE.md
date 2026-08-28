@@ -19,6 +19,33 @@
 - シークレットおよび API キー
 - ブログのアプリケーションとコンテンツ
 
+各ワークロードのアプリケーションとワークロード固有インフラは、それぞれの `blog` / `landing` / `suite-shuffle` リポジトリで管理する。このリポジトリは、それらへ提供するアカウント構成・ログ基盤・apex hosted zone とサブドメインの NS 委譲だけを扱う。
+
+## ディレクトリ構成と主要コマンド
+
+ルート直下の単一 package。
+
+- `bin/`: CDK エントリポイント(`bin/aws-platform.ts`)。ターゲット指定に関わらず全 stack を構築する
+- `lib/`: stack 定義と設定(`lib/config/*.ts` が環境変数の parse を担う)
+- `test/`: Vitest によるテスト
+- `docs/`: ドキュメント。ADR は `docs/adr/`
+- `scripts/`: 補助スクリプト(`actionlint.sh` など)
+- 主要コマンド: `npm run build`(tsc) / `npm test`(Vitest) / `npm run check`(Biome、safe fix のみ) / `npm run knip` / `npm run knip:production` / `npx cdk synth` / `./scripts/actionlint.sh -color`
+
+## デプロイ
+
+- デプロイは GitHub Actions(`.github/workflows/deploy.yml`)経由のみで行う。ローカルや手動での `cdk deploy` は行わない。
+- `main` への push で `bin/**`・`lib/**` などが変更されると起動し、`management` の GitHub Environment へ OIDC でロールを引き受けてデプロイする。
+
+## 品質確認と完了前チェック
+
+- コードを変更したら formatter / linter を実行すること。
+  - TypeScript / JSON: Biome。`npm run check`(safe fix のみ)。`--unsafe` は自動では使わず、必要なときだけ手動で `npm run check:unsafe` を実行し、diff を確認すること。
+  - GitHub Actions ワークフロー: `./scripts/actionlint.sh -color`
+- 変更が `lefthook.yml` の `pre-push` 対象(`npm run build`、`npm test`、`npx cdk synth`、`npm run knip`、`npm run knip:production`、`actionlint`)に該当する場合は、作業完了前に該当チェックを実行し、通してから完了とすること。失敗した場合は原因を修正し、同じチェックを再実行すること。
+- Knip は green にすることを目的にせず、「Knip 設定の方針」節と根本原因修正の手順に従うこと。通常モードと `--production --strict` の両方を確認すること。
+- PR の CI(`.github/workflows/pr-ci-gate.yml`)は上記と同じチェックを実行する。ローカルで通してから push すること。
+
 ## コードのドメイン非依存の原則
 
 - このリポジトリは特定の運用ドメインのために作られているが、このinstructionsファイルを含むソースコード・コメント・識別子(変数名、関数名、クラス名、リソース名、パッケージ名、スタック名など)には、運用中の実際のドメイン名やサイト名を登場させないこと。
@@ -101,6 +128,7 @@
 
 - `lib/config/*.ts`: 環境変数のparse処理
 - `.env.example`: ローカル開発用の一覧
+- `.github/workflows/deploy.yml`: 全ての`cdk deploy`ステップのenv。`bin/aws-platform.ts`はターゲットのstackに関わらず全stackを構築するため、「このstackはこの環境変数を使わないから不要」という判断はできない
 - `.github/workflows/pr-ci-gate.yml`: `cdk-synth`ジョブのenv
 
 ## GitHub Actions のバージョン固定
