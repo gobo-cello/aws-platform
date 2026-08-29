@@ -1,60 +1,35 @@
 # aws-platform
 
-運用対象ドメインを横断するAWS組織基盤のIaCリポジトリ。
+## このファイルの位置づけ
 
-## このリポジトリで管理するもの
+- source of truth はソースコードと設定ファイルとする。CLAUDE.md はそれを説明・要約しない。
+- CLAUDE.md に書くのは、コードを読んでも分からないことだけに限ること。
+  - 実行して確かめられる指示(完了前チェックなど)。
+  - 取り決め(コミット / PR / デプロイ運用、このリポジトリの管理範囲)。
+  - コードに痕跡が残らない「なぜ」と、意図的に採らない選択。
+  - 事故を防ぐための落とし穴の位置。
+- ディレクトリ構成の解説、実装の説明、API の一覧など「現状どうなっているか」は書かないこと。変更に追従されず、古い記述が誤誘導になる。
+- 特定のファイルやパスを編集するときだけ必要になる方針は `.claude/rules/` に置き、CLAUDE.md には常時必要なものだけ残すこと。
 
-- CloudTrail ログの一元管理
-- ログアーカイブの保存と暗号化
-- AWS Organizations 全体を対象とする IAM Access Analyzer
-- Service Control Policy
-- GitHub Actions と AWS の OIDC 連携
+## 概要とスコープ
 
-## このリポジトリで管理しないもの
-
-- AWS ルートユーザーの認証情報
-- IAM Identity Center のユーザー
-- 連絡先メールアドレス
-- ドメインレジストラの認証情報
-- シークレットおよび API キー
-- ブログのアプリケーションとコンテンツ
-
-各ワークロードのアプリケーションとワークロード固有インフラは、それぞれの `blog` / `landing` / `suite-shuffle` リポジトリで管理する。このリポジトリは、それらへ提供するアカウント構成・ログ基盤・apex hosted zone とサブドメインの NS 委譲だけを扱う。
-
-## ディレクトリ構成と主要コマンド
-
-ルート直下の単一 package。
-
-- `bin/`: CDK エントリポイント(`bin/aws-platform.ts`)。ターゲット指定に関わらず全 stack を構築する
-- `lib/`: stack 定義と設定(`lib/config/*.ts` が環境変数の parse を担う)
-- `test/`: Vitest によるテスト
-- `docs/`: ドキュメント。ADR は `docs/adr/`
-- `scripts/`: 補助スクリプト(`actionlint.sh` など)
-- 主要コマンド: `npm run build`(tsc) / `npm test`(Vitest) / `npm run check`(Biome、safe fix のみ) / `npm run knip` / `npm run knip:production` / `npx cdk synth` / `./scripts/actionlint.sh -color`
+- このリポジトリの目的、管理するもの・しないもの、他リポジトリとの境界、ディレクトリ構成、ローカルでの開発手順は `README.md` を参照すること。
 
 ## トピック別ルール(`.claude/rules/`)
 
-特定のファイルを編集するときだけ必要になる方針は、`.claude/rules/`配下のファイルに分割し、`paths` frontmatter で対象を絞っている。該当するファイルを Claude が読むと、そのルールが自動でコンテキストに読み込まれる。ファイルを開かない設計相談などでは読み込まれないため、必要なら明示的に参照すること。
-
-- `typescript.md`: TypeScript の型設計指針
-- `testing.md`: テスト対象とテスト支援コードの境界、テストの記述方針
-- `knip.md`: Knip の方針
-- `biome.md`: Biome 設定の方針
-- `infra-env-vars.md`: 環境変数を追加・変更する際に確認するファイル
-- `github-actions.md`: GitHub Actions のバージョン固定
+特定のファイルやパスを編集するときだけ必要になる方針は、`.claude/rules/` 配下に `paths` frontmatter 付きで置いてある。対象ファイルを読むと自動でコンテキストに読み込まれる。ファイルを開かない設計相談などでは読み込まれないため、必要なら明示的に参照すること。
 
 ## デプロイ
 
-- デプロイは GitHub Actions(`.github/workflows/deploy.yml`)経由のみで行う。ローカルや手動での `cdk deploy` は行わない。
-- `main` への push で `bin/**`・`lib/**` などが変更されると起動し、`management` の GitHub Environment へ OIDC でロールを引き受けてデプロイする。
+- デプロイは GitHub Actions(`.github/workflows/deploy.yml`)経由のみで行う。ローカルや手動での `cdk deploy` は行わない(初回セットアップを除く。手順と対象は `README.md`)。
 
 ## 品質確認と完了前チェック
 
 - コードを変更したら formatter / linter を実行すること。
   - TypeScript / JSON: Biome。`npm run check`(safe fix のみ)。`--unsafe` は自動では使わず、必要なときだけ手動で `npm run check:unsafe` を実行し、diff を確認すること。
   - GitHub Actions ワークフロー: `./scripts/actionlint.sh -color`
-- 変更が `lefthook.yml` の `pre-push` 対象(`npm run build`、`npm test`、`npx cdk synth`、`npm run knip`、`npm run knip:production`、`actionlint`)に該当する場合は、作業完了前に該当チェックを実行し、通してから完了とすること。失敗した場合は原因を修正し、同じチェックを再実行すること。
-- Knip は green にすることを目的にせず、「Knip 設定の方針」節と根本原因修正の手順に従うこと。通常モードと `--production --strict` の両方を確認すること。
+- 変更が `lefthook.yml` の `pre-push` 対象に該当する場合は、作業完了前に該当チェックをローカルで実行し、通してから完了とすること。失敗した場合は原因を修正し、同じチェックを再実行すること。対象と内容は `lefthook.yml` を参照。
+- Knip は green にすること自体を目的にせず、`.claude/rules/knip.md` の方針と根本原因修正の手順に従うこと。通常モードと `--production --strict` の両方を確認すること。
 - PR の CI(`.github/workflows/pr-ci-gate.yml`)は上記と同じチェックを実行する。ローカルで通してから push すること。
 
 ## コードのドメイン非依存の原則
