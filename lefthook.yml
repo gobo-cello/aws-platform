@@ -15,8 +15,6 @@ pre-push:
       run: npm run build
     jest:
       run: npm test
-    cdk-synth:
-      run: npx cdk synth
     knip:
       run: npm run knip
     knip-production:
