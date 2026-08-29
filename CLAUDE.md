@@ -166,13 +166,11 @@ Knip の設定と Knip 指摘への対応は、issue 数を減らして CI を�
 
 ### このリポジトリの Knip 構成
 
-対象は Knip v6。設定はリポジトリ直下の `knip.ts`（`KnipConfig` 型）に置き、`knip.ts` 内のコメントを各 `entry` / `ignore` の一次的な根拠とする。この節はその背景を補足する。
+対象は Knip v6。設定はリポジトリ直下の `knip.ts`（`KnipConfig` 型）に置き、各 `entry` / `ignore` の一次的な根拠は `knip.ts` 内のコメントに残す。設定の現状は `knip.ts` を参照し、この節は列挙ではなく背景と判断基準だけを補足する。
 
-- **npm workspaces ではない。** root の `package.json` に `workspaces` フィールドはなく、各パッケージディレクトリが独自の `package-lock.json` を持ち個別に `npm ci` される。`knip.ts` の `workspaces`（root は `.`）は、この独立したパッケージ群を Knip の解析単位として明示的に与えるためにある。
-- **CI ゲート。** `.github/workflows/pr-ci-gate.yml` の `knip` ジョブが、対象 workspace × `{通常, production}` で `npx knip [--workspace <w>]` と `--production --strict` を実行し、`--reporter github-actions` で PR を必須ブロックする。両モードが gate なので、ローカルでも `npm run knip` と `npm run knip:production` の両方を確認する。
-- **CDK と `tsx`。** CDK を持つ workspace では `tsx` が `cdk.json` の `"app"` から起動され `package.json` の scripts 経由ではないため、Knip の plugin 自動検出が実行経路を認識できない。これを補うために `entry: ["bin/*.ts!"]` と `ignoreDependencies: ["tsx"]` を明示している（末尾 `!` は production mode でも有効にする指定）。
-- **解析単位は 1 つ。** `knip.ts` は `workspaces` を使わず、root に直接 `entry: ["bin/aws-platform.ts!"]` / `project: ["bin/**/*.ts!", "lib/**/*.ts!", "test/**/*.ts"]` / `ignoreDependencies: ["tsx"]` を置く。`bin` と `lib` は通常・production の対象、`test/**/*.ts` は通常モードのみ。CI の `knip` / `knip-production` ジョブは workspace 指定なしで実行する。
-- `treatConfigHintsAsErrors: true` を設定し、configuration hint を CI 失敗条件にする。
+- **解析単位は 1 つ。** このリポジトリは npm workspaces ではなく単一 package なので、`knip.ts` は `workspaces` を使わず root に直接 `entry` / `project` / `ignoreDependencies` を置く。CI の `knip` / `knip-production` ジョブも workspace 指定なしで実行する。
+- **CI ゲート。** `.github/workflows/pr-ci-gate.yml` の `knip` ジョブが `{通常, production}` で `npx knip` と `--production --strict` を実行し、`--reporter github-actions` で PR を必須ブロックする。両モードが gate なので、ローカルでも `npm run knip` と `npm run knip:production` の両方を確認する。`treatConfigHintsAsErrors: true` で configuration hint も CI 失敗条件にする。
+- **CDK と `tsx`。** `tsx` が `cdk.json` の `"app"` から起動され `package.json` の scripts 経由ではないため、Knip の plugin 自動検出が実行経路を認識できない。これを補う `entry` の明示と `ignoreDependencies: ["tsx"]` が必要になる（末尾 `!` は production mode でも有効にする指定）。
 
 ### entry と project
 
@@ -252,8 +250,7 @@ Biome の設定は、CLI・エディター・CI が同じ品質基準を共有�
 ### 対象バージョンと構成
 
 - Biome v2 を使う。`@biomejs/biome` は `package.json` の `devDependencies` で固定し、設定 schema と CLI の version を揃える。`latest` に依存して診断や整形結果を変動させない。gobo-cello の他リポジトリ(`aws-platform` / `blog` / `landing` / `suite-shuffle`)と version を揃え、片方だけ先行して結果が変わることを避ける。
-- 設定はリポジトリ直下の `biome.json` 一つで、`bin/`・`lib/`・`scripts/`・`test/` を含むリポジトリ全体をカバーする。nested configuration(`extends: "//"` を含む)は置かない。現在の `biome.json` は `$schema` と対象 version の固定、`vcs` 連携、および `linter`(下記)を持つ。他の gobo-cello リポジトリの `biome.json` を値の妥当性を確認せず持ち込まず、CSS / HTML など対象ファイルの無い設定(`css.parser`・HTML `overrides` など)は追加しない。
-- 現在の `biome.json` は、Linter に `linter.domains.project`(module graph 解析)と `suspicious/noImportCycles`(`error`)だけを追加し、それ以外は Biome の推奨ルールとデフォルト整形に従っている。循環 import は初期化順序の不具合や refactoring 時の障害という実害があり、TypeScript / Knip / Vitest / actionlint のいずれでも検出できないため、目的と対象が明確な個別ルールとして採用する(`project` ドメインは recommended の `noPrivateImports` も持ち込むが、現状のコードに違反はなくモジュール境界のガードとして働く)。Formatter / Assist のルール上書きは持たず、目的を説明できないルール追加や formatter オプション追加をしない。
+- 設定はリポジトリ直下の `biome.json` 一つで、`bin/`・`lib/`・`scripts/`・`test/` を含むリポジトリ全体をカバーする。nested configuration(`extends: "//"` を含む)は置かない。他の gobo-cello リポジトリの `biome.json` を値の妥当性を確認せず持ち込まず、CSS / HTML など対象ファイルの無い設定(`css.parser`・HTML `overrides` など)は追加しない。設定の現状は `biome.json` を参照する。
 
 ### Formatter / Linter / Assist を分ける
 
@@ -283,7 +280,7 @@ Biome の設定は、CLI・エディター・CI が同じ品質基準を共有�
 
 ### overrides と suppression は狭く保つ
 
-- 現在 `overrides` は無い。追加する場合は、生成物・fixture・特定構文・段階導入など明確な境界を持つ例外に限定し、広い glob で通常の source 全体を覆わない。パターン・適用順序・例外の理由を追跡可能にする。
+- `overrides` を追加する場合は、生成物・fixture・特定構文・段階導入など明確な境界を持つ例外に限定し、広い glob で通常の source 全体を覆わない。パターン・適用順序・例外の理由を追跡可能にする。
 - ルールを無効化する前に、コードの修正、ルールの対象範囲、severity、`overrides` で表現できないかを検討する。
 - 個別の suppression コメントは false positive・外部仕様・生成コードなど、ソースを直せない理由がある場合の最後の手段とし、対象を最小限にして理由を必ず残す。同じ suppression が繰り返されるなら、個別の例外を増やす前に設定の境界・ドメイン・ルール選択・生成処理の設計を見直す。
 
